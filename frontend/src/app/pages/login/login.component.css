@@ -1,153 +1,191 @@
+/* ========================================
+   LOGIN - Revolut style
+   ======================================== */
+
 .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  padding: var(--spacing-4);
 }
 
 .login-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 450px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 440px;
   width: 100%;
-  padding: 40px;
+  padding: var(--spacing-10);
+  border: none;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-10);
 }
 
 .login-header h1 {
-  margin: 0 0 8px 0;
-  color: #667eea;
-  font-size: 32px;
+  margin: 0 0 var(--spacing-2) 0;
+  color: var(--text-primary);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
   margin: 0;
-  color: #666;
-  font-size: 14px;
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
 }
 
 .auth-form h2 {
-  margin: 0 0 24px 0;
-  color: #333;
-  font-size: 24px;
+  margin: 0 0 var(--spacing-8) 0;
+  color: var(--text-primary);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
   text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-5);
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  color: #333;
-  font-weight: 600;
-  font-size: 14px;
+  margin-bottom: var(--spacing-2);
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
 }
 
 .form-control {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  padding: var(--spacing-4) var(--spacing-4);
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
   box-sizing: border-box;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 56px;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-focus);
+  background: var(--bg-primary);
 }
 
 .form-control.error {
-  border-color: #ef4444;
+  border-color: var(--error);
+  background: var(--error-light);
 }
 
 .form-help {
   display: block;
-  margin-top: 4px;
-  color: #ef4444;
-  font-size: 12px;
+  margin-top: var(--spacing-2);
+  color: var(--error);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
 }
 
 .btn-block {
   width: 100%;
-  margin-top: 24px;
+  margin-top: var(--spacing-6);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--brand-primary);
   color: white;
   border: none;
-  padding: 14px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  padding: var(--spacing-4) var(--spacing-6);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all var(--transition-base);
+  min-height: 56px;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: var(--brand-primary-hover);
+  box-shadow: var(--shadow-brand);
+  transform: scale(1.02);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .alert {
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  padding: var(--spacing-4) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
 }
 
 .alert-danger {
-  background-color: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
+  background-color: var(--error-light);
+  color: var(--error-dark);
+  border: 2px solid var(--error);
 }
 
 .toggle-mode {
   text-align: center;
-  margin-top: 24px;
-  color: #666;
-  font-size: 14px;
+  margin-top: var(--spacing-6);
+  color: var(--text-secondary);
+  font-size: var(--text-base);
 }
 
 .toggle-mode a {
-  color: #667eea;
+  color: var(--brand-primary);
   text-decoration: none;
-  font-weight: 600;
-  margin-left: 4px;
+  font-weight: var(--font-semibold);
+  margin-left: var(--spacing-1);
 }
 
 .toggle-mode a:hover {
   text-decoration: underline;
+  color: var(--brand-primary-hover);
 }
 
 @media (max-width: 480px) {
+  .login-container {
+    padding: var(--spacing-3);
+  }
+
   .login-card {
-    padding: 24px;
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+  }
+
+  .login-header {
+    margin-bottom: var(--spacing-6);
   }
 
   .login-header h1 {
-    font-size: 24px;
+    font-size: var(--text-3xl);
   }
 
   .auth-form h2 {
-    font-size: 20px;
+    font-size: var(--text-xl);
+  }
+
+  .subtitle {
+    font-size: var(--text-sm);
   }
 }

@@ -1,73 +1,58 @@
 /* ========================================
-   HEADER - Premium Design
+   HEADER - Revolut style minimal header
    ======================================== */
 
 .header {
-  position: relative;
-  padding: var(--spacing-8);
-  background: var(--brand-gradient);
-  color: white;
-  border-radius: var(--radius-xl);
-  margin-bottom: var(--spacing-8);
-  box-shadow: var(--shadow-brand);
-  overflow: hidden;
-}
-
-/* Subtle overlay for depth */
-.header::before {
-  content: '';
-  position: absolute;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%);
-  pointer-events: none;
+  z-index: 100;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--neutral-200);
+  padding: var(--spacing-4) var(--spacing-6);
+  margin-bottom: 0;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .header h1 {
-  position: relative;
   margin: 0;
-  font-size: var(--text-3xl);
+  font-size: var(--text-xl);
   font-weight: var(--font-bold);
   letter-spacing: -0.02em;
   line-height: var(--leading-tight);
+  color: var(--text-primary);
 }
 
 /* User Info Section */
 .user-info {
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--spacing-3);
-  margin-top: var(--spacing-4);
 }
 
 .user-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--bg-tertiary);
+  padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: white;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
 }
 
 .btn-logout {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: var(--spacing-2) var(--spacing-4);
-  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   cursor: pointer;
@@ -75,27 +60,34 @@
 }
 
 .btn-logout:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .btn-logout:active {
-  transform: scale(0.98);
+  transform: scale(0.95);
 }
 
 /* ========================================
-   NAVIGATION - Premium Tabs
+   NAVIGATION - Revolut bottom navigation
    ======================================== */
 
 .nav-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-8);
+  justify-content: space-around;
+  gap: 0;
   background: var(--bg-primary);
-  padding: var(--spacing-2);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-primary);
-  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-2) var(--spacing-3);
+  padding-bottom: calc(var(--spacing-2) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--neutral-200);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .nav-tab {
@@ -103,55 +95,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  border-radius: var(--radius-md);
+  justify-content: center;
+  gap: 4px;
+  padding: var(--spacing-2) var(--spacing-1);
   text-decoration: none;
-  color: var(--text-secondary);
-  transition: all var(--transition-base);
+  color: var(--text-tertiary);
+  transition: all var(--transition-fast);
   cursor: pointer;
-  border: 1px solid transparent;
+  border: none;
   background: transparent;
   position: relative;
+  min-width: 60px;
 }
 
 .nav-tab:hover:not(.active) {
-  background: var(--neutral-50);
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .nav-tab.active {
-  background: var(--brand-gradient);
-  color: white;
-  box-shadow: var(--shadow-brand);
-  border-color: transparent;
+  color: var(--brand-primary);
 }
 
-/* Smooth transition for active indicator */
-.nav-tab.active::after {
+/* Active indicator dot (Revolut style) */
+.nav-tab.active .icon::after {
   content: '';
   position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px;
-  height: 3px;
-  background: white;
-  border-radius: var(--radius-full);
-  opacity: 0.5;
+  top: -4px;
+  right: -4px;
+  width: 6px;
+  height: 6px;
+  background: var(--brand-primary);
+  border-radius: 50%;
 }
 
 .nav-tab .icon {
-  font-size: var(--text-2xl);
+  font-size: 24px;
   line-height: 1;
+  position: relative;
 }
 
 .nav-tab .label {
-  font-size: var(--text-xs);
+  font-size: 11px;
   font-weight: var(--font-medium);
   line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
 }
 
 /* ========================================
@@ -160,11 +147,11 @@
 
 .footer {
   text-align: center;
-  padding: var(--spacing-12) var(--spacing-6);
+  padding: var(--spacing-8) var(--spacing-6);
+  padding-bottom: calc(var(--spacing-8) + 80px + env(safe-area-inset-bottom));
   color: var(--text-tertiary);
-  font-size: var(--text-sm);
-  margin-top: var(--spacing-16);
-  border-top: 1px solid var(--border-secondary);
+  font-size: var(--text-xs);
+  margin-top: var(--spacing-12);
 }
 
 .footer p {
@@ -173,52 +160,56 @@
 }
 
 /* ========================================
+   CONTENT WRAPPER
+   ======================================== */
+
+.container {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  min-height: 100vh;
+}
+
+/* ========================================
    MOBILE RESPONSIVE
    ======================================== */
 
 @media (max-width: 768px) {
   .header {
-    padding: var(--spacing-6);
-    margin-bottom: var(--spacing-6);
-    border-radius: var(--radius-lg);
+    padding: var(--spacing-3) var(--spacing-4);
   }
 
   .header h1 {
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
   }
 
   .user-info {
-    flex-direction: column;
     gap: var(--spacing-2);
   }
 
-  .user-badge,
+  .user-badge {
+    font-size: 11px;
+    padding: var(--spacing-1) var(--spacing-2);
+  }
+
   .btn-logout {
-    font-size: var(--text-xs);
-    padding: var(--spacing-1) var(--spacing-3);
-  }
-
-  .nav-tabs {
-    gap: var(--spacing-1);
-    padding: var(--spacing-1);
-    margin-bottom: var(--spacing-6);
-  }
-
-  .nav-tab {
-    padding: var(--spacing-2) var(--spacing-3);
-    gap: var(--spacing-1);
+    font-size: 11px;
+    padding: var(--spacing-1) var(--spacing-2);
   }
 
   .nav-tab .icon {
-    font-size: var(--text-lg);
+    font-size: 22px;
   }
 
   .nav-tab .label {
     font-size: 10px;
   }
+}
 
-  .footer {
-    padding: var(--spacing-8) var(--spacing-4);
-    margin-top: var(--spacing-12);
+@media (min-width: 769px) {
+  /* Desktop: move nav to side or keep at bottom - for now keep at bottom */
+  .nav-tabs {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   }
 }
