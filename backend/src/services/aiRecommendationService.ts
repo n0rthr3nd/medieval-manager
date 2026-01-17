@@ -23,11 +23,17 @@ import {
 import { getWeekNumber } from '../utils/dateUtils';
 
 /**
- * URL del API externo de LangChain + Ollama + RAG + MCP
- * Configurado vía variable de entorno
+ * Configuración del API externo de LangChain + Ollama + RAG + MCP
+ * Configurado vía variables de entorno
  */
 const AI_API_URL = process.env.AI_API_URL || 'http://localhost:8000';
 const AI_API_TIMEOUT = parseInt(process.env.AI_API_TIMEOUT || '30000');
+const AI_API_KEY = process.env.AI_API_KEY || '';
+const AI_MODEL = process.env.AI_MODEL || 'qwen3:14b';
+const AI_TEMPERATURE = parseFloat(process.env.AI_TEMPERATURE || '0.7');
+const AI_MAX_TOKENS = parseInt(process.env.AI_MAX_TOKENS || '1024');
+const AI_USE_KNOWLEDGE_BASE = process.env.AI_USE_KNOWLEDGE_BASE === 'true';
+const AI_USE_MONGODB_TOOLS = process.env.AI_USE_MONGODB_TOOLS === 'false';
 
 /**
  * Clase de servicio para recomendaciones AI
@@ -290,6 +296,124 @@ export class AIRecommendationService {
   }
 
   /**
+   * Construye el prompt del sistema con todo el contexto del usuario
+   */
+  private construirPromptSistema(
+    contextoUsuario: ContextoUsuario,
+    catalogoDisponible: CatalogoDisponible,
+    intencion: IntencionUsuario
+  ): string {
+    const ingredientesFrecuentesTexto = contextoUsuario.ingredientesFrecuentes
+      .slice(0, 10)
+      .map((i) => `${i.ingrediente} (${i.frecuencia} veces)`)
+      .join(', ');
+
+    const combinacionesFrecuentesTexto = contextoUsuario.combinacionesRepetidas
+      .slice(0, 5)
+      .map((c) => `[${c.ingredientes.join(', ')}] (${c.frecuencia} veces)`)
+      .join(', ');
+
+    const historicoReciente = contextoUsuario.historicoCompleto
+      .slice(0, 5)
+      .map(
+        (b) =>
+          `- ${b.nombre}: ${b.ingredientes.join(', ')} (pan ${b.tipoPan}, tamaño ${b.tamano})`
+      )
+      .join('\n');
+
+    return `Eres un asistente conversacional de recomendación inteligente dentro de una app de pedidos de bocadillos.
+
+## Contexto Técnico Importante
+Ya existe un API externo completamente operativo basado en LangChain, Ollama, RAG y MCP.
+Este API se encarga de recuperar el catálogo válido de ingredientes y el histórico del usuario.
+
+## Objetivo
+Recomendar bocadillos de forma personalizada, rápida y fiable, al estilo de un recomendador tipo Spotify, sin inventar opciones y reduciendo al máximo la fricción del pedido.
+
+## Reglas Estrictas (OBLIGATORIAS)
+- ❌ Nunca inventes ingredientes, panes o combinaciones
+- ❌ No propongas nada fuera del catálogo recibido
+- ❌ No asumas restricciones alimentarias no explícitas
+- ❌ No modifiques ni ignores el histórico del usuario
+- ✅ Prioriza ingredientes y combinaciones frecuentes
+- ✅ Puedes proponer variaciones leves sobre pedidos habituales
+- ✅ Puedes sugerir descubrimiento solo si es coherente con el histórico
+
+## Contexto del Usuario: ${contextoUsuario.nombre}
+
+### Ingredientes Frecuentes
+${ingredientesFrecuentesTexto || 'Usuario nuevo, sin histórico'}
+
+### Combinaciones Repetidas
+${combinacionesFrecuentesTexto || 'Ninguna combinación repetida aún'}
+
+### Ingredientes Nunca Usados
+${contextoUsuario.ingredientesNuncaUsados.slice(0, 20).join(', ') || 'Ninguno'}
+
+### Panes Preferidos
+${contextoUsuario.panesPreferidos.join(', ') || 'Sin preferencia aún'}
+
+### Tamaños Preferidos
+${contextoUsuario.tamanosPreferidos.join(', ') || 'Sin preferencia aún'}
+
+### Últimos 5 Pedidos
+${historicoReciente || 'Sin pedidos anteriores'}
+
+## Catálogo Disponible
+
+### Ingredientes Disponibles (SOLO usa estos)
+${catalogoDisponible.ingredientes.join(', ')}
+
+### Tipos de Pan Disponibles (SOLO usa estos)
+${catalogoDisponible.tiposPan.join(', ')}
+
+### Tamaños Disponibles (SOLO usa estos)
+${catalogoDisponible.tamanos.join(', ')}
+
+## Intención Detectada
+${intencion}
+
+## Formato de Respuesta (OBLIGATORIO)
+
+Debes devolver ÚNICAMENTE un objeto JSON válido con esta estructura exacta:
+
+{
+  "respuestaTexto": "Texto breve y natural explicando por qué se recomienda ese bocadillo (máx. 2-3 frases)",
+  "propuestaPedido": {
+    "nombre": "Nombre descriptivo del bocadillo",
+    "tamano": "normal" o "grande",
+    "tipoPan": "normal", "integral" o "semillas",
+    "ingredientes": ["Ingrediente1", "Ingrediente2", ...]
+  },
+  "alternativa": {
+    "nombre": "Nombre de la alternativa (opcional)",
+    "tamano": "normal" o "grande",
+    "tipoPan": "normal", "integral" o "semillas",
+    "ingredientes": ["Ingrediente1", "Ingrediente2", ...]
+  },
+  "tipoRecomendacion": "recurrente" | "variacion_suave" | "descubrimiento",
+  "razonamiento": "Por qué se hizo esta recomendación",
+  "confianza": 0.85,
+  "metadatos": {
+    "ingredientesNuevos": ["ingredientes que el usuario nunca ha usado"],
+    "basadoEnPedido": "Nombre del pedido en el que se basó (si aplica)",
+    "similitudConHistorico": 0.75
+  }
+}
+
+## Comportamiento
+- Conversacional, natural y cercano
+- Seguro pero no invasivo
+- Breve y directo (máx. 2–3 frases en respuestaTexto)
+- Enfocado a que el usuario pueda aceptar con un solo toque
+
+## Contexto Temporal
+Hora: ${contextoUsuario.contextoTemporal?.hora}h
+Día: ${contextoUsuario.contextoTemporal?.dia}
+Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}`;
+  }
+
+  /**
    * Llama al API externo de LangChain + Ollama + RAG + MCP
    */
   private async llamarAPIExterno(
@@ -298,15 +422,49 @@ export class AIRecommendationService {
     const startTime = Date.now();
 
     try {
+      // Construir prompt del sistema
+      const systemPrompt = this.construirPromptSistema(
+        request.contextoUsuario,
+        request.catalogoDisponible,
+        request.intencion
+      );
+
+      // Construir payload para el API externo
+      const payload = {
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt,
+          },
+          {
+            role: 'user',
+            content: request.mensajeUsuario,
+          },
+        ],
+        model: AI_MODEL,
+        temperature: AI_TEMPERATURE,
+        max_tokens: AI_MAX_TOKENS,
+        use_knowledge_base: AI_USE_KNOWLEDGE_BASE,
+        use_mongodb_tools: AI_USE_MONGODB_TOOLS,
+      };
+
+      // Configurar headers
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (AI_API_KEY) {
+        headers['X-API-KEY'] = AI_API_KEY;
+      }
+
+      // Llamar al API con timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), AI_API_TIMEOUT);
 
-      const response = await fetch(`${AI_API_URL}/api/recommend`, {
+      const response = await fetch(`${AI_API_URL}/chat/stream`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
+        headers,
+        body: JSON.stringify(payload),
         signal: controller.signal,
       });
 
@@ -316,12 +474,45 @@ export class AIRecommendationService {
         throw new Error(`API externo respondió con status ${response.status}`);
       }
 
-      const data = await response.json();
+      // Leer el stream completo
+      let fullText = '';
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No se pudo obtener el reader del stream');
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+      }
+
+      // Parsear la respuesta JSON del LLM
+      // El LLM debería devolver un JSON válido según el prompt
+      let recomendacion: RecomendacionIA;
+
+      try {
+        // Intentar parsear directamente
+        recomendacion = JSON.parse(fullText.trim());
+      } catch (parseError) {
+        // Si falla, intentar extraer JSON del texto
+        const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          recomendacion = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('No se pudo parsear la respuesta del LLM como JSON');
+        }
+      }
+
       const latenciaMs = Date.now() - startTime;
 
       return {
         exito: true,
-        recomendacion: data.recomendacion,
+        recomendacion,
         timestamp: new Date(),
         latenciaMs,
       };
