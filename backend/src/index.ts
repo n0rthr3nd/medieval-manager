@@ -11,6 +11,7 @@ import ingredientesRoutes from './routes/ingredientesRoutes';
 import systemConfigRoutes from './routes/systemConfigRoutes';
 import pushRoutes from './routes/pushRoutes';
 import estadisticasRoutes from './routes/estadisticasRoutes';
+import aiRecommendationRoutes from './routes/aiRecommendationRoutes';
 import User, { UserRole } from './models/User';
 import Ingrediente from './models/Ingrediente';
 import { INGREDIENTES_DISPONIBLES } from './config/menu';
@@ -50,6 +51,7 @@ app.use('/api/ingredientes', ingredientesRoutes);
 app.use('/api/system', systemConfigRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/estadisticas', estadisticasRoutes);
+app.use('/api/ai-recommendations', aiRecommendationRoutes);
 
 // Ruta 404
 app.use((req, res) => {

@@ -1,0 +1,277 @@
+import { Component, OnInit, OnDestroy, inject, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { AiRecommendationService } from '../../services/ai-recommendation.service';
+import {
+  ConversacionChat,
+  MensajeChat,
+  RecomendacionIA,
+  IntencionUsuario,
+  PropuestaPedido,
+  TipoRecomendacion,
+} from '../../models/ai-recommendation.model';
+import { Bocadillo } from '../../models/bocadillo.model';
+
+@Component({
+  selector: 'app-chat-recomendador',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './chat-recomendador.component.html',
+  styleUrl: './chat-recomendador.component.css',
+})
+export class ChatRecomendadorComponent implements OnInit, OnDestroy {
+  private aiService = inject(AiRecommendationService);
+  private destroy$ = new Subject<void>();
+
+  // Outputs
+  bocadilloCreado = output<Bocadillo>();
+
+  // Estado del chat
+  conversacion: ConversacionChat | null = null;
+  mensajes: MensajeChat[] = [];
+  mensajeUsuario = '';
+  cargando = false;
+  errorMessage = '';
+  chatAbierto = false;
+
+  // Recomendación actual pendiente de aceptar
+  recomendacionActual: RecomendacionIA | null = null;
+
+  // Sugerencias rápidas
+  sugerenciasRapidas = [
+    { texto: 'Sorpréndeme', icono: '🎲' },
+    { texto: 'Algo ligero', icono: '🥗' },
+    { texto: 'Algo contundente', icono: '🍔' },
+    { texto: 'Lo de siempre', icono: '⭐' },
+    { texto: 'Quiero probar algo distinto', icono: '🔍' },
+  ];
+
+  // Tipos de recomendación para la UI
+  readonly TipoRecomendacion = TipoRecomendacion;
+
+  ngOnInit() {
+    // Suscribirse al estado de la conversación
+    this.aiService.conversacion$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((conversacion) => {
+        this.conversacion = conversacion;
+        this.mensajes = conversacion?.mensajes || [];
+
+        // Obtener la última recomendación si existe
+        const ultimoMensajeAsistente = this.mensajes
+          .filter((m) => m.rol === 'asistente' && m.recomendacion)
+          .pop();
+
+        if (ultimoMensajeAsistente?.recomendacion) {
+          this.recomendacionActual = ultimoMensajeAsistente.recomendacion;
+        }
+      });
+
+    // Suscribirse al estado de carga
+    this.aiService.cargando$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((cargando) => {
+        this.cargando = cargando;
+      });
+
+    // Cargar conversación activa si existe
+    this.cargarConversacion();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Carga la conversación activa
+   */
+  cargarConversacion() {
+    this.aiService.obtenerConversacion().subscribe({
+      error: (err) => {
+        console.error('Error cargando conversación:', err);
+      },
+    });
+  }
+
+  /**
+   * Abre el chat
+   */
+  abrirChat() {
+    this.chatAbierto = true;
+    this.errorMessage = '';
+  }
+
+  /**
+   * Cierra el chat
+   */
+  cerrarChat() {
+    this.chatAbierto = false;
+    this.mensajeUsuario = '';
+    this.errorMessage = '';
+  }
+
+  /**
+   * Envía un mensaje y solicita recomendación
+   */
+  enviarMensaje() {
+    if (!this.mensajeUsuario.trim() || this.cargando) {
+      return;
+    }
+
+    const mensaje = this.mensajeUsuario.trim();
+    this.mensajeUsuario = '';
+    this.errorMessage = '';
+
+    this.aiService.solicitarRecomendacion(mensaje).subscribe({
+      next: (response) => {
+        if (response.success && response.data?.recomendacion) {
+          this.recomendacionActual = response.data.recomendacion;
+        } else {
+          this.errorMessage =
+            response.error || 'No se pudo obtener una recomendación';
+        }
+      },
+      error: (err) => {
+        console.error('Error solicitando recomendación:', err);
+        this.errorMessage =
+          'Error al conectar con el servicio de recomendaciones';
+      },
+    });
+  }
+
+  /**
+   * Envía una sugerencia rápida
+   */
+  enviarSugerencia(texto: string) {
+    this.mensajeUsuario = texto;
+    this.enviarMensaje();
+  }
+
+  /**
+   * Acepta la recomendación y crea el bocadillo
+   */
+  aceptarRecomendacion(propuesta: PropuestaPedido) {
+    if (!this.recomendacionActual || this.cargando) {
+      return;
+    }
+
+    const request = {
+      recomendacionId: new Date().getTime().toString(),
+      propuestaPedido: propuesta,
+    };
+
+    this.aiService.aceptarRecomendacion(request).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          // Emitir el bocadillo creado
+          this.bocadilloCreado.emit(response.data);
+
+          // Limpiar recomendación actual
+          this.recomendacionActual = null;
+
+          // Cerrar el chat
+          this.cerrarChat();
+        } else {
+          this.errorMessage =
+            response.error || 'Error al crear el bocadillo';
+        }
+      },
+      error: (err) => {
+        console.error('Error aceptando recomendación:', err);
+        this.errorMessage = 'Error al aceptar la recomendación';
+      },
+    });
+  }
+
+  /**
+   * Rechaza la recomendación
+   */
+  rechazarRecomendacion() {
+    if (!this.recomendacionActual) {
+      return;
+    }
+
+    const request = {
+      recomendacionId: new Date().getTime().toString(),
+      aceptada: false,
+      razonRechazo: 'Usuario rechazó la recomendación',
+    };
+
+    this.aiService.enviarFeedback(request).subscribe({
+      next: () => {
+        this.recomendacionActual = null;
+      },
+      error: (err) => {
+        console.error('Error enviando feedback:', err);
+      },
+    });
+  }
+
+  /**
+   * Formatea el timestamp del mensaje
+   */
+  formatearHora(timestamp: Date): string {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  /**
+   * Obtiene el icono según el tipo de recomendación
+   */
+  getIconoTipoRecomendacion(tipo: TipoRecomendacion): string {
+    switch (tipo) {
+      case TipoRecomendacion.RECURRENTE:
+        return '⭐';
+      case TipoRecomendacion.VARIACION_SUAVE:
+        return '🔄';
+      case TipoRecomendacion.DESCUBRIMIENTO:
+        return '🔍';
+      default:
+        return '💡';
+    }
+  }
+
+  /**
+   * Obtiene el label según el tipo de recomendación
+   */
+  getLabelTipoRecomendacion(tipo: TipoRecomendacion): string {
+    switch (tipo) {
+      case TipoRecomendacion.RECURRENTE:
+        return 'Favorito';
+      case TipoRecomendacion.VARIACION_SUAVE:
+        return 'Variación';
+      case TipoRecomendacion.DESCUBRIMIENTO:
+        return 'Nuevo';
+      default:
+        return 'Recomendación';
+    }
+  }
+
+  /**
+   * Formatea la lista de ingredientes
+   */
+  formatearIngredientes(ingredientes: string[]): string {
+    if (ingredientes.length === 0) return '';
+    if (ingredientes.length === 1) return ingredientes[0];
+    if (ingredientes.length === 2) return ingredientes.join(' y ');
+
+    const ultimos = ingredientes.slice(-2);
+    const primeros = ingredientes.slice(0, -2);
+
+    return `${primeros.join(', ')}, ${ultimos.join(' y ')}`;
+  }
+
+  /**
+   * Obtiene el color del badge de confianza
+   */
+  getConfianzaColor(confianza: number): string {
+    if (confianza >= 0.8) return 'verde';
+    if (confianza >= 0.6) return 'amarillo';
+    return 'rojo';
+  }
+}

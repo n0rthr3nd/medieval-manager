@@ -1,0 +1,241 @@
+<!-- Botón flotante para abrir el chat -->
+<button
+  *ngIf="!chatAbierto"
+  class="chat-fab"
+  (click)="abrirChat()"
+  aria-label="Abrir asistente de recomendaciones"
+>
+  <span class="fab-icon">💡</span>
+  <span class="fab-text">Recomendador IA</span>
+</button>
+
+<!-- Modal del chat -->
+<div class="chat-overlay" *ngIf="chatAbierto" (click)="cerrarChat()">
+  <div class="chat-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-content">
+        <span class="header-icon">💡</span>
+        <div class="header-text">
+          <h3>Asistente Inteligente</h3>
+          <p>Te ayudo a elegir tu bocadillo perfecto</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="cerrarChat()" aria-label="Cerrar chat">
+        ✕
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="chat-messages">
+      <!-- Mensaje de bienvenida si no hay mensajes -->
+      <div class="welcome-message" *ngIf="mensajes.length === 0">
+        <div class="welcome-icon">👋</div>
+        <h4>¡Hola! Soy tu asistente de bocadillos</h4>
+        <p>
+          Dime qué te apetece hoy y te daré una recomendación personalizada
+          basada en tus pedidos anteriores.
+        </p>
+
+        <!-- Sugerencias rápidas -->
+        <div class="quick-suggestions">
+          <p class="suggestions-title">Prueba con:</p>
+          <div class="suggestions-grid">
+            <button
+              *ngFor="let sugerencia of sugerenciasRapidas"
+              class="suggestion-chip"
+              (click)="enviarSugerencia(sugerencia.texto)"
+            >
+              <span class="chip-icon">{{ sugerencia.icono }}</span>
+              <span class="chip-text">{{ sugerencia.texto }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de mensajes -->
+      <div class="messages-list" *ngIf="mensajes.length > 0">
+        <div
+          *ngFor="let mensaje of mensajes"
+          class="message"
+          [class.message-usuario]="mensaje.rol === 'usuario'"
+          [class.message-asistente]="mensaje.rol === 'asistente'"
+        >
+          <div class="message-bubble">
+            <p class="message-text">{{ mensaje.contenido }}</p>
+
+            <!-- Recomendación si existe -->
+            <div class="recomendacion-card" *ngIf="mensaje.recomendacion">
+              <!-- Badge de tipo -->
+              <div class="tipo-badge">
+                <span class="badge-icon">{{
+                  getIconoTipoRecomendacion(mensaje.recomendacion.tipoRecomendacion)
+                }}</span>
+                <span class="badge-text">{{
+                  getLabelTipoRecomendacion(mensaje.recomendacion.tipoRecomendacion)
+                }}</span>
+              </div>
+
+              <!-- Propuesta principal -->
+              <div class="propuesta-principal">
+                <h4 class="propuesta-nombre">
+                  {{ mensaje.recomendacion.propuestaPedido.nombre }}
+                </h4>
+
+                <div class="propuesta-detalles">
+                  <div class="detalle-item">
+                    <span class="detalle-icon">🍞</span>
+                    <span class="detalle-text">{{
+                      mensaje.recomendacion.propuestaPedido.tipoPan
+                    }}</span>
+                  </div>
+                  <div class="detalle-item">
+                    <span class="detalle-icon">📏</span>
+                    <span class="detalle-text">{{
+                      mensaje.recomendacion.propuestaPedido.tamano
+                    }}</span>
+                  </div>
+                </div>
+
+                <div class="ingredientes-list">
+                  <span class="ingredientes-label">Ingredientes:</span>
+                  <p class="ingredientes-text">
+                    {{
+                      formatearIngredientes(
+                        mensaje.recomendacion.propuestaPedido.ingredientes
+                      )
+                    }}
+                  </p>
+                </div>
+
+                <!-- Botones de acción solo si es la recomendación actual -->
+                <div
+                  class="action-buttons"
+                  *ngIf="recomendacionActual === mensaje.recomendacion"
+                >
+                  <button
+                    class="btn-aceptar"
+                    (click)="
+                      aceptarRecomendacion(mensaje.recomendacion!.propuestaPedido)
+                    "
+                    [disabled]="cargando"
+                  >
+                    <span class="btn-icon">✓</span>
+                    <span class="btn-text">Pedir este</span>
+                  </button>
+                  <button
+                    class="btn-rechazar"
+                    (click)="rechazarRecomendacion()"
+                    [disabled]="cargando"
+                  >
+                    <span class="btn-text">Otra opción</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Alternativa si existe -->
+              <div
+                class="propuesta-alternativa"
+                *ngIf="mensaje.recomendacion.alternativa"
+              >
+                <p class="alternativa-label">O también:</p>
+                <div class="alternativa-content">
+                  <h5>{{ mensaje.recomendacion.alternativa.nombre }}</h5>
+                  <p class="alternativa-ingredientes">
+                    {{
+                      formatearIngredientes(
+                        mensaje.recomendacion.alternativa.ingredientes
+                      )
+                    }}
+                  </p>
+                  <button
+                    class="btn-alternativa"
+                    (click)="aceptarRecomendacion(mensaje.recomendacion!.alternativa!)"
+                    [disabled]="cargando"
+                    *ngIf="recomendacionActual === mensaje.recomendacion"
+                  >
+                    Pedir esta alternativa
+                  </button>
+                </div>
+              </div>
+
+              <!-- Confianza y metadatos -->
+              <div class="recomendacion-footer">
+                <div class="confianza-badge" [class]="getConfianzaColor(mensaje.recomendacion.confianza)">
+                  <span class="confianza-text"
+                    >{{ (mensaje.recomendacion.confianza * 100).toFixed(0) }}%
+                    confianza</span
+                  >
+                </div>
+                <div
+                  class="basado-en"
+                  *ngIf="mensaje.recomendacion.metadatos?.basadoEnPedido"
+                >
+                  <span class="basado-icon">📋</span>
+                  <span class="basado-text"
+                    >Basado en "{{
+                      mensaje.recomendacion.metadatos.basadoEnPedido
+                    }}"</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <span class="message-time">{{ formatearHora(mensaje.timestamp) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicador de carga -->
+      <div class="loading-indicator" *ngIf="cargando">
+        <div class="loading-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p>Pensando en la recomendación perfecta...</p>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="error-message" *ngIf="errorMessage">
+        <span class="error-icon">⚠️</span>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-area">
+      <!-- Sugerencias rápidas (si hay mensajes) -->
+      <div class="quick-chips" *ngIf="mensajes.length > 0 && !recomendacionActual">
+        <button
+          *ngFor="let sugerencia of sugerenciasRapidas.slice(0, 3)"
+          class="quick-chip"
+          (click)="enviarSugerencia(sugerencia.texto)"
+        >
+          {{ sugerencia.icono }}
+        </button>
+      </div>
+
+      <!-- Input -->
+      <form class="input-form" (ngSubmit)="enviarMensaje()">
+        <input
+          type="text"
+          class="message-input"
+          placeholder="Dime qué te apetece..."
+          [(ngModel)]="mensajeUsuario"
+          name="mensaje"
+          [disabled]="cargando"
+          autocomplete="off"
+        />
+        <button
+          type="submit"
+          class="send-btn"
+          [disabled]="!mensajeUsuario.trim() || cargando"
+          aria-label="Enviar mensaje"
+        >
+          <span class="send-icon">→</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

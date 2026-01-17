@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BocadilloFormComponent } from '../../components/bocadillo-form/bocadillo-form.component';
 import { BocadilloListComponent } from '../../components/bocadillo-list/bocadillo-list.component';
+import { ChatRecomendadorComponent } from '../../components/chat-recomendador/chat-recomendador.component';
 import { BocadilloService } from '../../services/bocadillo.service';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { PushNotificationService } from '../../services/push-notification.service';
@@ -10,7 +11,7 @@ import { Bocadillo, OrderWindowStatus } from '../../models/bocadillo.model';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, BocadilloFormComponent, BocadilloListComponent],
+  imports: [CommonModule, BocadilloFormComponent, BocadilloListComponent, ChatRecomendadorComponent],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css',
 })
