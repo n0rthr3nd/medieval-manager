@@ -221,34 +221,50 @@ export class ChatRecomendadorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Obtiene el icono según el tipo de recomendación
+   * Obtiene el icono según el la intención o el tipo de recomendación
    */
-  getIconoTipoRecomendacion(tipo: TipoRecomendacion): string {
-    switch (tipo) {
-      case TipoRecomendacion.RECURRENTE:
-        return '⭐';
-      case TipoRecomendacion.VARIACION_SUAVE:
-        return '🔄';
-      case TipoRecomendacion.DESCUBRIMIENTO:
-        return '🔍';
-      default:
-        return '💡';
+  getIconoTipoRecomendacion(recomendacion: RecomendacionIA, intent?: IntencionUsuario): string {
+    // Si hay una intención explícita en el mensaje, usarla
+    if (intent) {
+      switch (intent) {
+        case IntencionUsuario.LIGERO: return '🥗';
+        case IntencionUsuario.CONTUNDENTE: return '🍔';
+        case IntencionUsuario.LO_DE_SIEMPRE: return '⭐';
+        case IntencionUsuario.SORPRENDEME: return '🎲';
+        case IntencionUsuario.PROBAR_DISTINTO: return '🔍';
+      }
+    }
+
+    // Fallback al tipo de recomendación (antiguo)
+    switch (recomendacion.tipoRecomendacion) {
+      case TipoRecomendacion.RECURRENTE: return '⭐';
+      case TipoRecomendacion.VARIACION_SUAVE: return '🔄';
+      case TipoRecomendacion.DESCUBRIMIENTO: return '🔍';
+      default: return '💡';
     }
   }
 
   /**
-   * Obtiene el label según el tipo de recomendación
+   * Obtiene el label según la intención o el tipo de recomendación
    */
-  getLabelTipoRecomendacion(tipo: TipoRecomendacion): string {
-    switch (tipo) {
-      case TipoRecomendacion.RECURRENTE:
-        return 'Favorito';
-      case TipoRecomendacion.VARIACION_SUAVE:
-        return 'Variación';
-      case TipoRecomendacion.DESCUBRIMIENTO:
-        return 'Nuevo';
-      default:
-        return 'Recomendación';
+  getLabelTipoRecomendacion(recomendacion: RecomendacionIA, intent?: IntencionUsuario): string {
+    // Si hay una intención explícita en el mensaje, usarla
+    if (intent) {
+      switch (intent) {
+        case IntencionUsuario.LIGERO: return 'Algo ligero';
+        case IntencionUsuario.CONTUNDENTE: return 'Algo contundente';
+        case IntencionUsuario.LO_DE_SIEMPRE: return 'Lo de siempre';
+        case IntencionUsuario.SORPRENDEME: return 'Sorpresa';
+        case IntencionUsuario.PROBAR_DISTINTO: return 'Algo distinto';
+      }
+    }
+
+    // Fallback al tipo de recomendación (antiguo)
+    switch (recomendacion.tipoRecomendacion) {
+      case TipoRecomendacion.RECURRENTE: return 'Favorito';
+      case TipoRecomendacion.VARIACION_SUAVE: return 'Variación';
+      case TipoRecomendacion.DESCUBRIMIENTO: return 'Nuevo';
+      default: return 'Recomendación';
     }
   }
 

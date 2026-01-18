@@ -89,6 +89,8 @@ export interface ContextoTemporal {
  */
 export interface CatalogoDisponible {
   ingredientes: string[];
+  ingredientesLigeros?: string[];
+  ingredientesContundentes?: string[];
   tiposPan: TipoPan[];
   tamanos: TamanoBocadillo[];
 }

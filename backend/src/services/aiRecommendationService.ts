@@ -37,6 +37,8 @@ const AI_MAX_TOKENS = parseInt(process.env.AI_MAX_TOKENS || '1024');
 const AI_USE_KNOWLEDGE_BASE = process.env.AI_USE_KNOWLEDGE_BASE === 'true';
 const AI_USE_MONGODB_TOOLS = process.env.AI_USE_MONGODB_TOOLS === 'false';
 
+// Listas de referencia eliminadas en favor de categorización en BBDD
+
 /**
  * Clase de servicio para recomendaciones AI
  */
@@ -205,12 +207,18 @@ export class AIRecommendationService {
    */
   private async obtenerCatalogoDisponible(): Promise<CatalogoDisponible> {
     const ingredientes = await Ingrediente.find({ disponible: true })
-      .select('nombre')
+      .select('nombre perfil')
       .sort({ orden: 1 })
       .lean();
 
     return {
       ingredientes: ingredientes.map((i) => i.nombre),
+      ingredientesLigeros: ingredientes
+        .filter((i) => i.perfil === 'ligero')
+        .map((i) => i.nombre),
+      ingredientesContundentes: ingredientes
+        .filter((i) => i.perfil === 'contundente')
+        .map((i) => i.nombre),
       tiposPan: Object.values(TipoPan),
       tamanos: Object.values(TamanoBocadillo),
     };
@@ -316,6 +324,76 @@ export class AIRecommendationService {
       console.warn('No se pudo cargar la base de conocimiento local:', error);
     }
 
+    // Lógica específica según la intención detector
+    let instruccionesAdicionales = '';
+    const ultimoPedido = contextoUsuario.historicoCompleto[0];
+
+    switch (intencion) {
+      case IntencionUsuario.LIGERO:
+        instruccionesAdicionales = `
+### INSTRUCCIÓN ESPECIFICA (INTENCIÓN: LIGERO)
+El usuario ha solicitado explícitamente algo "ligero".
+1. Tu propuesta PRINCIPAL debe basarse ÚNICAMENTE en ingredientes de la lista "Ingredientes Ligeros" (o similares muy hipocalóricos).
+2. TIPO DE PAN: Prioriza 'integral' si está disponible.
+3. Evita salsas pesadas (mayonesa, alioli).
+4. SUGERENCIA: Bocadillos vegetales o con pavo/pollo.
+`;
+        break;
+
+      case IntencionUsuario.CONTUNDENTE:
+        instruccionesAdicionales = `
+### INSTRUCCIÓN ESPECIFICA (INTENCIÓN: CONTUNDENTE)
+El usuario ha solicitado explícitamente algo "contundente" o "pesado".
+1. Tu propuesta PRINCIPAL debe incluir AL MENOS 2 ingredientes de la lista "Ingredientes Contundentes".
+2. No te preocupes por las calorías.
+3. SUGERENCIA: Bocadillos con bacon, lomo, tortillas o quesos fuertes.
+`;
+        break;
+
+      case IntencionUsuario.LO_DE_SIEMPRE:
+        if (ultimoPedido) {
+          instruccionesAdicionales = `
+### INSTRUCCIÓN ESPECIFICA (INTENCIÓN: LO DE SIEMPRE)
+El usuario pide "lo de siempre" (su último pedido).
+1. Tu propuesta PRINCIPAL debe ser IDENTICA al último pedido:
+   - Nombre: ${ultimoPedido.nombre}
+   - Ingredientes: ${ultimoPedido.ingredientes.join(', ')}
+   - Pan: ${ultimoPedido.tipoPan}
+   - Tamaño: ${ultimoPedido.tamano}
+2. El "razonamiento" debe indicar que es su último pedido repetido.
+`;
+        } else {
+          instruccionesAdicionales = `
+### INSTRUCCIÓN ESPECIFICA (INTENCIÓN: LO DE SIEMPRE)
+El usuario pide "lo de siempre", pero NO tiene histórico de pedidos.
+1. Trátalo como una recomendación estándar basada en sus gustos declarados o recomienda un "Clásico" (Jamón y Queso).
+2. Menciona amablemente que no tienes constancia de pedidos anteriores.
+`;
+        }
+        break;
+
+      case IntencionUsuario.PROBAR_DISTINTO:
+        instruccionesAdicionales = `
+### INSTRUCCIÓN ESPECIFICA (INTENCIÓN: PROBAR ALGO DISTINTO)
+El usuario quiere innovar.
+1. Tu recomendación NO DEBE coincidir con ninguno de los "Últimos 5 Pedidos".
+2. Intenta usar ingredientes de la lista "Ingredientes Nunca Usados" o "Ingredientes Raros".
+3. Busca una combinación creativa que no sea habitual en su histórico.
+`;
+        break;
+
+      case IntencionUsuario.SORPRENDEME:
+        instruccionesAdicionales = `
+### INSTRUCCIÓN ESPECIFICA (INTENCIÓN: SORPRÉNDEME)
+El usuario quiere una sorpresa aleatoria.
+1. GENERA una combinación ALEATORIA de ingredientes.
+2. NO te limites a lo que suele pedir.
+3. Asegura que la combinación sea comestible, pero original.
+4. Puedes mezclar ingredientes ligeros y contundentes.
+`;
+        break;
+    }
+
     const ingredientesFrecuentesTexto = contextoUsuario.ingredientesFrecuentes
       .slice(0, 10)
       .map((i) => `${i.ingrediente} (${i.frecuencia} veces)`)
@@ -333,6 +411,16 @@ export class AIRecommendationService {
           `- ${b.nombre}: ${b.ingredientes.join(', ')} (pan ${b.tipoPan}, tamaño ${b.tamano})`
       )
       .join('\n');
+
+    // Filtrar ingredientes disponibles según intención para evitar alucinaciones
+    let poolIngredientes = catalogoDisponible.ingredientes;
+
+    if (intencion === IntencionUsuario.LIGERO && catalogoDisponible.ingredientesContundentes) {
+      const contundentesSet = new Set(catalogoDisponible.ingredientesContundentes);
+      poolIngredientes = poolIngredientes.filter(i => !contundentesSet.has(i));
+    }
+
+    // ... resto del código ...
 
     return `Eres un asistente conversacional de recomendación inteligente dentro de una app de pedidos de bocadillos.
 
@@ -378,7 +466,7 @@ ${historicoReciente || 'Sin pedidos anteriores'}
 ## Catálogo Disponible
 
 ### Ingredientes Disponibles (SOLO usa estos)
-${catalogoDisponible.ingredientes.join(', ')}
+${poolIngredientes.join(', ')}
 
 ### Tipos de Pan Disponibles (SOLO usa estos)
 ${catalogoDisponible.tiposPan.join(', ')}
@@ -386,8 +474,16 @@ ${catalogoDisponible.tiposPan.join(', ')}
 ### Tamaños Disponibles (SOLO usa estos)
 ${catalogoDisponible.tamanos.join(', ')}
 
+### Ingredientes Ligeros (Referencia para peticiones 'Ligeras')
+${catalogoDisponible.ingredientesLigeros?.join(', ') || 'Determinados por el sistema'}
+
+### Ingredientes Contundentes (Referencia para peticiones 'Contundentes')
+${catalogoDisponible.ingredientesContundentes?.join(', ') || 'Determinados por el sistema'}
+
 ## Intención Detectada
 ${intencion}
+
+${instruccionesAdicionales}
 
 ## Formato de Respuesta (OBLIGATORIO)
 
@@ -643,63 +739,253 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
   /**
    * Genera una recomendación inteligente
    */
+  /**
+   * Genera una recomendación basada en lógica determinista/estocástica sobre el histórico
+   */
   async generarRecomendacion(
     userId: string | mongoose.Types.ObjectId,
     nombre: string,
     mensajeUsuario: string
   ): Promise<AIRecommendationResponse> {
+    const startTime = Date.now();
     try {
-      // 1. Construir contexto del usuario
-      const contextoUsuario = await this.construirContextoUsuario(
-        userId,
-        nombre
-      );
-
-      // 2. Obtener catálogo disponible
-      const catalogoDisponible = await this.obtenerCatalogoDisponible();
-
-      // 3. Detectar intención
+      // 1. Detectar intención
       const intencion = this.detectarIntencion(mensajeUsuario);
+      let recomendacion: RecomendacionIA;
 
-      // 4. Construir request para API externo
-      const request: AIRecommendationRequest = {
-        userId: userId.toString(),
-        intencion,
-        mensajeUsuario,
-        contextoUsuario,
-        catalogoDisponible,
-        configuracion: {
-          maxRecomendaciones: 1,
-          incluirAlternativa: true,
-          nivelDescubrimiento: 'medio',
-        },
-      };
+      // 2. Obtener listas de referencia para queries
+      const catalogo = await this.obtenerCatalogoDisponible();
+      const ingredientesLigeros = catalogo.ingredientesLigeros || [];
+      const ingredientesContundentes = catalogo.ingredientesContundentes || [];
 
-      // 5. Llamar al API externo
-      const response = await this.llamarAPIExterno(request);
-
-      // 6. Si falla el API externo, usar fallback
-      if (!response.exito || !response.recomendacion) {
-        console.warn('API externo falló, usando recomendación de fallback');
-        const recomendacionFallback = this.generarRecomendacionFallback(
-          contextoUsuario,
-          catalogoDisponible,
-          intencion
-        );
-
-        return {
-          exito: true,
-          recomendacion: recomendacionFallback,
-          timestamp: new Date(),
-          latenciaMs: response.latenciaMs,
-        };
+      // 3. Ejecutar lógica según intención
+      switch (intencion) {
+        case IntencionUsuario.LIGERO:
+          recomendacion = await this.recomendarLigero(ingredientesLigeros, ingredientesContundentes, nombre);
+          break;
+        case IntencionUsuario.CONTUNDENTE:
+          recomendacion = await this.recomendarContundente(ingredientesContundentes, nombre);
+          break;
+        case IntencionUsuario.LO_DE_SIEMPRE:
+          recomendacion = await this.recomendarLoDeSiempre(userId, nombre);
+          break;
+        case IntencionUsuario.SORPRENDEME:
+          recomendacion = await this.recomendarSorpresa(nombre);
+          break;
+        case IntencionUsuario.PROBAR_DISTINTO:
+          recomendacion = await this.recomendarDistinto(userId, nombre);
+          break;
+        default:
+          // Fallback a Sorpréndeme o Personalizado (si quisiéramos mantener la IA, aquí iría)
+          recomendacion = await this.recomendarSorpresa(nombre);
+          recomendacion.razonamiento = "No reconocí una instrucción específica, así que te sorprendo.";
       }
 
-      return response;
+      return {
+        exito: true,
+        recomendacion,
+        timestamp: new Date(),
+        latenciaMs: Date.now() - startTime,
+      };
+
     } catch (error) {
       console.error('Error generando recomendación:', error);
-      throw error;
+      return {
+        exito: false,
+        error: error instanceof Error ? error.message : 'Error desconocido',
+        timestamp: new Date(),
+        latenciaMs: Date.now() - startTime,
+      };
     }
+  }
+
+  // --- LÓGICA DE PROGRAMACIÓN POR ESCENARIOS ---
+
+  private async recomendarLigero(ligeros: string[], contundentes: string[], nombreUsuario: string): Promise<RecomendacionIA> {
+    // Buscar bocadillos que tengan ALGUN ligero y NINGUN contundente
+    const matchStage = {
+      $match: {
+        ingredientes: {
+          $in: ligeros,
+          $nin: contundentes
+        }
+      }
+    };
+
+    const result = await Bocadillo.aggregate([
+      matchStage,
+      { $sample: { size: 1 } }
+    ]);
+
+    if (!result || result.length === 0) {
+      // Fallback si no hay historial: Generar uno 'on the fly'
+      return {
+        respuestaTexto: "No he encontrado pedidos previos ligeros, así que he creado uno fresco para ti.",
+        propuestaPedido: {
+          nombre: "Vegetal Fresco",
+          tamano: TamanoBocadillo.NORMAL,
+          tipoPan: TipoPan.INTEGRAL,
+          ingredientes: ["Lechuga", "Tomate", "Queso Fresco", "Orégano"] // Hardcoded safe ingredients
+        },
+        tipoRecomendacion: TipoRecomendacion.DESCUBRIMIENTO,
+        razonamiento: "Bocadillo ligero generado por sistema (sin contundentes).",
+        confianza: 1.0
+      }
+    }
+
+    const b = result[0];
+    return {
+      respuestaTexto: "Aquí tienes una opción ligera basada en pedidos populares.",
+      propuestaPedido: {
+        nombre: nombreUsuario, // Usar nombre del usuario actual
+        tamano: b.tamano,
+        tipoPan: b.tipoPan,
+        ingredientes: b.ingredientes
+      },
+      tipoRecomendacion: TipoRecomendacion.RECURRENTE,
+      razonamiento: "Pedido histórico que cumple criterios de ligereza.",
+      confianza: 1.0
+    };
+  }
+
+  private async recomendarContundente(contundentes: string[], nombreUsuario: string): Promise<RecomendacionIA> {
+    // Bocadillos con AL MENOS un ingrediente contundente
+    const result = await Bocadillo.aggregate([
+      { $match: { ingredientes: { $in: contundentes } } },
+      { $sample: { size: 1 } }
+    ]);
+
+    if (!result || result.length === 0) {
+      return {
+        respuestaTexto: "No encontré referencias potentes, pero este seguro que te llena.",
+        propuestaPedido: {
+          nombre: "Completo de la Casa",
+          tamano: TamanoBocadillo.GRANDE,
+          tipoPan: TipoPan.NORMAL,
+          ingredientes: ["Bacon", "Lomo", "Queso Curado", "Huevo Duro"]
+        },
+        tipoRecomendacion: TipoRecomendacion.DESCUBRIMIENTO,
+        razonamiento: "Generado por sistema por falta de histórico contundente.",
+        confianza: 1.0
+      };
+    }
+
+    const b = result[0];
+    return {
+      respuestaTexto: "Una opción potente y con sabor, como pediste.",
+      propuestaPedido: {
+        nombre: nombreUsuario, // Usar nombre del usuario actual
+        tamano: b.tamano,
+        tipoPan: b.tipoPan,
+        ingredientes: b.ingredientes
+      },
+      tipoRecomendacion: TipoRecomendacion.RECURRENTE,
+      razonamiento: "Contiene ingredientes contundentes.",
+      confianza: 1.0
+    };
+  }
+
+  private async recomendarLoDeSiempre(userId: string | mongoose.Types.ObjectId, nombreUsuario: string): Promise<RecomendacionIA> {
+    const ultimo = await Bocadillo.findOne({ userId }).sort({ fechaCreacion: -1 });
+
+    if (!ultimo) {
+      return {
+        respuestaTexto: "Aún no tienes un 'habitual', así que te sugiero nuestro clásico.",
+        propuestaPedido: {
+          nombre: "Clásico",
+          tamano: TamanoBocadillo.NORMAL,
+          tipoPan: TipoPan.NORMAL,
+          ingredientes: ["Jamón Serrano", "Tomate", "Aceite"]
+        },
+        tipoRecomendacion: TipoRecomendacion.DESCUBRIMIENTO,
+        razonamiento: "Sin historial previo.",
+        confianza: 0.8
+      };
+    }
+
+    return {
+      respuestaTexto: "¡Marchando lo de siempre! Tu último pedido, tal cual.",
+      propuestaPedido: {
+        nombre: nombreUsuario, // Usar nombre del usuario actual
+        tamano: ultimo.tamano,
+        tipoPan: ultimo.tipoPan,
+        ingredientes: ultimo.ingredientes
+      },
+      tipoRecomendacion: TipoRecomendacion.RECURRENTE,
+      razonamiento: "Último pedido del usuario.",
+      confianza: 1.0
+    };
+  }
+
+  private async recomendarSorpresa(nombreUsuario: string): Promise<RecomendacionIA> {
+    // Totalmente al azar de la base de datos global
+    const result = await Bocadillo.aggregate([{ $sample: { size: 1 } }]);
+
+    if (!result || result.length === 0) {
+      // Si la DB está vacía
+      return {
+        respuestaTexto: "Hoy me siento clásico: Jamón y Queso.",
+        propuestaPedido: {
+          nombre: "Mixto Clásico",
+          tamano: TamanoBocadillo.NORMAL,
+          tipoPan: TipoPan.NORMAL,
+          ingredientes: ["Jamón York", "Queso"]
+        },
+        tipoRecomendacion: TipoRecomendacion.DESCUBRIMIENTO,
+        razonamiento: "DB vacía.",
+        confianza: 1.0
+      }
+    }
+
+    const b = result[0];
+    return {
+      respuestaTexto: "¡Sorpresa! He rescatado esta combinación de nuestro archivo.",
+      propuestaPedido: {
+        nombre: nombreUsuario, // Usar nombre del usuario actual
+        tamano: b.tamano,
+        tipoPan: b.tipoPan,
+        ingredientes: b.ingredientes
+      },
+      tipoRecomendacion: TipoRecomendacion.DESCUBRIMIENTO,
+      razonamiento: "Selección aleatoria global.",
+      confianza: 1.0
+    };
+  }
+
+  private async recomendarDistinto(userId: string | mongoose.Types.ObjectId, nombreUsuario: string): Promise<RecomendacionIA> {
+    // 1. Obtener firmas de pedidos del usuario para excluirlos
+    // Firma = ingredientes sorted + pan (simplificado)
+    const misPedidos = await Bocadillo.find({ userId }).select('ingredientes tipoPan').lean();
+    const misFirmas = new Set(misPedidos.map(p => {
+      return JSON.stringify({ i: p.ingredientes.sort(), p: p.tipoPan });
+    }));
+
+    // 2. Buscar candidatos globales (limitamos a 50 recientes o random para eficiencia)
+    const candidatos = await Bocadillo.aggregate([{ $sample: { size: 50 } }]);
+
+    // 3. Filtrar
+    const distinto = candidatos.find(c => {
+      const firma = JSON.stringify({ i: c.ingredientes.sort(), p: c.tipoPan });
+      return !misFirmas.has(firma);
+    });
+
+    if (!distinto) {
+      // Fallback si ha probado TODO lo que ha salido en el sample
+      return this.recomendarSorpresa(nombreUsuario);
+    }
+
+    return {
+      respuestaTexto: "Aquí tienes algo diferente a lo que sueles pedir.",
+      propuestaPedido: {
+        nombre: nombreUsuario, // Usar nombre del usuario actual
+        tamano: distinto.tamano,
+        tipoPan: distinto.tipoPan,
+        ingredientes: distinto.ingredientes
+      },
+      tipoRecomendacion: TipoRecomendacion.DESCUBRIMIENTO,
+      razonamiento: "Bocadillo no presente en el historial del usuario.",
+      confianza: 1.0
+    };
   }
 
   /**
