@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, output } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, output, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -26,6 +26,7 @@ export class ChatRecomendadorComponent implements OnInit, OnDestroy {
 
   // Outputs
   bocadilloCreado = output<Bocadillo>();
+  @ViewChild('chatScrollContainer') private chatScrollContainer!: ElementRef;
 
   // Estado del chat
   conversacion: ConversacionChat | null = null;
@@ -66,6 +67,8 @@ export class ChatRecomendadorComponent implements OnInit, OnDestroy {
         if (ultimoMensajeAsistente?.recomendacion) {
           this.recomendacionActual = ultimoMensajeAsistente.recomendacion;
         }
+
+        this.scrollToBottom();
       });
 
     // Suscribirse al estado de carga
@@ -101,6 +104,7 @@ export class ChatRecomendadorComponent implements OnInit, OnDestroy {
   abrirChat() {
     this.chatAbierto = true;
     this.errorMessage = '';
+    this.scrollToBottom();
   }
 
   /**
@@ -289,5 +293,21 @@ export class ChatRecomendadorComponent implements OnInit, OnDestroy {
     if (confianza >= 0.8) return 'verde';
     if (confianza >= 0.6) return 'amarillo';
     return 'rojo';
+  }
+
+  /**
+   * Hace scroll hasta el final del chat
+   */
+  private scrollToBottom(): void {
+    try {
+      setTimeout(() => {
+        if (this.chatScrollContainer) {
+          this.chatScrollContainer.nativeElement.scrollTop =
+            this.chatScrollContainer.nativeElement.scrollHeight;
+        }
+      }, 100);
+    } catch (err) {
+      console.error('Error haciendo scroll:', err);
+    }
   }
 }
