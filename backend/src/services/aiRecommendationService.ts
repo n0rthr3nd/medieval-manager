@@ -4,6 +4,8 @@
  */
 
 import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
 import Bocadillo, { TamanoBocadillo, TipoPan } from '../models/Bocadillo';
 import Ingrediente from '../models/Ingrediente';
 import ConversacionChat from '../models/ConversacionChat';
@@ -303,6 +305,17 @@ export class AIRecommendationService {
     catalogoDisponible: CatalogoDisponible,
     intencion: IntencionUsuario
   ): string {
+    // Intentar leer la base de conocimiento local
+    let knowledgeBaseContent = '';
+    try {
+      const kbPath = path.join(__dirname, '../../../../docs/RAG_KNOWLEDGE_BASE.md');
+      if (fs.existsSync(kbPath)) {
+        knowledgeBaseContent = fs.readFileSync(kbPath, 'utf-8');
+      }
+    } catch (error) {
+      console.warn('No se pudo cargar la base de conocimiento local:', error);
+    }
+
     const ingredientesFrecuentesTexto = contextoUsuario.ingredientesFrecuentes
       .slice(0, 10)
       .map((i) => `${i.ingrediente} (${i.frecuencia} veces)`)
@@ -329,6 +342,9 @@ Este API se encarga de recuperar el catálogo válido de ingredientes y el hist�
 
 ## Objetivo
 Recomendar bocadillos de forma personalizada, rápida y fiable, al estilo de un recomendador tipo Spotify, sin inventar opciones y reduciendo al máximo la fricción del pedido.
+
+## Base de Conocimiento (Reglas y Estilo)
+${knowledgeBaseContent ? knowledgeBaseContent : 'Sigue un estilo amable y profesional.'}
 
 ## Reglas Estrictas (OBLIGATORIAS)
 - ❌ Nunca inventes ingredientes, panes o combinaciones
@@ -401,11 +417,44 @@ Debes devolver ÚNICAMENTE un objeto JSON válido con esta estructura exacta:
   }
 }
 
+## Ejemplo de Respuesta (One-Shot)
+
+Usuario: "Quiero algo ligero"
+Respuesta:
+{
+  "respuestaTexto": "Te sugiero un bocadillo vegetal simple, ideal para una cena ligera.",
+  "propuestaPedido": {
+    "nombre": "Vegetal Simple",
+    "tamano": "normal",
+    "tipoPan": "integral",
+    "ingredientes": ["Lechuga", "Tomate", "Aceite"]
+  },
+  "alternativa": {
+    "nombre": "Pavo Ligero",
+    "tamano": "normal",
+    "tipoPan": "integral",
+    "ingredientes": ["Pavo", "Queso Fresco"]
+  },
+  "tipoRecomendacion": "variacion_suave",
+  "razonamiento": "Bajo contenido calórico solicitado",
+  "confianza": 0.9,
+  "metadatos": {
+    "ingredientesNuevos": [],
+    "basadoEnPedido": "Vegetal",
+    "similitudConHistorico": 0.8
+  }
+}
+
 ## Comportamiento
 - Conversacional, natural y cercano
 - Seguro pero no invasivo
 - Breve y directo (máx. 2–3 frases en respuestaTexto)
 - Enfocado a que el usuario pueda aceptar con un solo toque
+
+## IMPORTANTE
+- NO uses bloques de código markdown (\`\`\`json).
+- Devuelve SOLO el JSON plano.
+- EL JSON DEBE SER VÁLIDO.
 
 ## Contexto Temporal
 Hora: ${contextoUsuario.contextoTemporal?.hora}h
@@ -444,6 +493,7 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
         model: AI_MODEL,
         temperature: AI_TEMPERATURE,
         max_tokens: AI_MAX_TOKENS,
+        format: 'json', // Forzar respuesta JSON nativa en Ollama
         use_knowledge_base: AI_USE_KNOWLEDGE_BASE,
         use_mongodb_tools: AI_USE_MONGODB_TOOLS,
       };
