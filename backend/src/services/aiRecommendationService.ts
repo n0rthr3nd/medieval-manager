@@ -43,7 +43,7 @@ export class AIRecommendationService {
    * Obtiene el histórico completo de bocadillos del usuario
    */
   private async obtenerHistoricoUsuario(
-    userId: mongoose.Types.ObjectId
+    userId: string | mongoose.Types.ObjectId
   ): Promise<BocadilloHistorico[]> {
     const bocadillos = await Bocadillo.find({ userId })
       .sort({ fechaCreacion: -1 })
@@ -218,7 +218,7 @@ export class AIRecommendationService {
    * Construye el contexto completo del usuario
    */
   private async construirContextoUsuario(
-    userId: mongoose.Types.ObjectId,
+    userId: string | mongoose.Types.ObjectId,
     nombre: string
   ): Promise<ContextoUsuario> {
     const historicoCompleto = await this.obtenerHistoricoUsuario(userId);
@@ -594,7 +594,7 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
    * Genera una recomendación inteligente
    */
   async generarRecomendacion(
-    userId: mongoose.Types.ObjectId,
+    userId: string | mongoose.Types.ObjectId,
     nombre: string,
     mensajeUsuario: string
   ): Promise<AIRecommendationResponse> {
@@ -656,7 +656,7 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
    * Guarda un mensaje en la conversación
    */
   async guardarMensajeConversacion(
-    userId: mongoose.Types.ObjectId,
+    userId: string | mongoose.Types.ObjectId,
     rol: 'usuario' | 'asistente',
     contenido: string,
     recomendacion?: RecomendacionIA,
@@ -701,7 +701,7 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
   /**
    * Obtiene la conversación activa del usuario
    */
-  async obtenerConversacionActiva(userId: mongoose.Types.ObjectId) {
+  async obtenerConversacionActiva(userId: string | mongoose.Types.ObjectId) {
     const { week, year } = getWeekNumber(new Date());
 
     return await ConversacionChat.findOne({
