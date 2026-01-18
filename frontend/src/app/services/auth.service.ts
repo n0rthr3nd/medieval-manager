@@ -31,9 +31,13 @@ export class AuthService {
     // Verificar token al iniciar
     const token = this.getToken();
     if (token) {
-      this.loadCurrentUser().subscribe({
-        error: () => this.logout(),
-      });
+      if (this.isTokenExpired(token)) {
+        this.logout();
+      } else {
+        this.loadCurrentUser().subscribe({
+          error: (err) => console.error('Failed to load current user', err),
+        });
+      }
     }
   }
 
@@ -87,7 +91,32 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    return !this.isTokenExpired(token);
+  }
+
+  private isTokenExpired(token: string): boolean {
+    if (!token) return true;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+
+      const payload = JSON.parse(jsonPayload);
+      if (!payload.exp) return false;
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      return payload.exp < currentTime;
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+      return true;
+    }
   }
 
   isAdmin(): boolean {
