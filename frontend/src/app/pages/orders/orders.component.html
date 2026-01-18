@@ -57,7 +57,6 @@
   [refresh]="refreshList()"
   (editRequested)="onEditRequested($event)" />
 
-<!-- Chat Recomendador IA (solo si está permitido pedir) -->
+<!-- Chat Recomendador IA (solo si está permitido pedir) *ngIf="isOrderingAllowed()" -->
 <app-chat-recomendador
-  *ngIf="isOrderingAllowed()"
-  (bocadilloCreado)="onBocadilloCreated($event)" />
+  (bocadilloCreado)="onBocadilloCreated($event)" /> 
