@@ -24,6 +24,8 @@ export interface IConversacionChat extends Document {
   activa: boolean;
   semana: number;
   ano: number;
+  /** Número de mensajes del USUARIO consumidos esta semana (cuota). */
+  mensajesUsuarioCount: number;
 }
 
 /**
@@ -90,6 +92,11 @@ const ConversacionChatSchema: Schema = new Schema({
   ano: {
     type: Number,
     required: true,
+  },
+  mensajesUsuarioCount: {
+    type: Number,
+    default: 0,
+    min: 0,
   },
 }, {
   timestamps: true,

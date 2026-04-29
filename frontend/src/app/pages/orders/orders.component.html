@@ -59,4 +59,7 @@
 
 <!-- Chat Recomendador IA (solo si está permitido pedir) *ngIf="isOrderingAllowed()" -->
 <app-chat-recomendador
-  (bocadilloCreado)="onBocadilloCreated($event)" /> 
+  (bocadilloCreado)="onBocadilloCreated($event)" />
+
+<!-- Chatbot conversacional (gated por User.chatbotMode) -->
+<app-chatbot (bocadilloAfectado)="onBocadilloAfectadoByChatbot($event)" />

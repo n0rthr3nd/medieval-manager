@@ -1,0 +1,109 @@
+@if (enabled()) {
+  <div class="chatbot-fab" *ngIf="!abierto()">
+    <button
+      type="button"
+      class="fab-button"
+      (click)="abrir()"
+      [attr.aria-label]="'Abrir chatbot'">
+      🤖
+      @if (isBeta()) { <span class="fab-beta">BETA</span> }
+    </button>
+  </div>
+
+  <div class="chatbot-panel" *ngIf="abierto()">
+    <header class="chatbot-header">
+      <div class="title">
+        <span class="dot"></span>
+        Asistente de bocadillos
+        @if (isBeta()) { <span class="beta-pill">BETA</span> }
+      </div>
+      <div class="quota" [class.warn]="remaining() <= 1">
+        {{ quotaTexto() }}
+      </div>
+      <button type="button" class="close-btn" (click)="cerrar()" aria-label="Cerrar">
+        ×
+      </button>
+    </header>
+
+    <div class="messages" #scrollContainer>
+      @if (mensajes().length === 0) {
+        <div class="empty">
+          <p>¡Hola! Cuéntame qué bocadillo te apetece y lo gestionamos.</p>
+          <p class="hint">Tienes {{ weeklyLimit() }} mensajes por semana — úsalos con cabeza.</p>
+        </div>
+      }
+
+      @for (m of mensajes(); track m.id) {
+        <div class="msg" [class.user]="m.rol === 'usuario'" [class.assistant]="m.rol === 'asistente'">
+          <div class="bubble">
+            @if (m.toolCalls && m.toolCalls.length > 0) {
+              <div class="tool-calls">
+                @for (tc of m.toolCalls; track $index) {
+                  <div class="tool-call" [class.ok]="tc.ok === true" [class.fail]="tc.ok === false">
+                    <span class="tool-spinner" *ngIf="tc.ok === undefined">⏳</span>
+                    <span class="tool-icon" *ngIf="tc.ok === true">✓</span>
+                    <span class="tool-icon" *ngIf="tc.ok === false">✕</span>
+                    {{ toolLabel(tc.toolName) }}
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="text" *ngIf="m.contenido">{{ m.contenido }}</div>
+            <span class="caret" *ngIf="m.streaming && !m.contenido">▍</span>
+
+            @if (m.propuesta) {
+              <div class="propuesta">
+                <div class="propuesta-line">
+                  <strong>{{ m.propuesta.tamano | titlecase }}</strong> · pan {{ m.propuesta.tipoPan }}
+                </div>
+                <div class="propuesta-ingredientes">
+                  @for (ing of m.propuesta.ingredientes; track ing) {
+                    <span class="ingrediente-tag">{{ ing }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (m.bocadilloAfectado) {
+              <div class="accion-tag" [class.creado]="m.bocadilloAfectado.accion === 'creado'"
+                   [class.editado]="m.bocadilloAfectado.accion === 'editado'"
+                   [class.eliminado]="m.bocadilloAfectado.accion === 'eliminado'">
+                {{ accionLabel(m.bocadilloAfectado.accion) }}
+              </div>
+            }
+          </div>
+          <div class="meta">{{ formatearHora(m.timestamp) }}</div>
+        </div>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-bar">{{ errorMessage() }}</div>
+    }
+
+    <form class="composer" (ngSubmit)="enviar()" #f="ngForm">
+      <input
+        type="text"
+        [ngModel]="inputValue()"
+        (ngModelChange)="inputValue.set($event)"
+        name="mensaje"
+        placeholder="Escribe tu mensaje..."
+        autocomplete="off"
+        maxlength="1000"
+        [disabled]="enviando() || sinCuota()"
+      />
+      <button
+        type="submit"
+        [disabled]="!inputValue().trim() || enviando() || sinCuota()">
+        @if (enviando()) { … } @else { Enviar }
+      </button>
+    </form>
+
+    @if (sinCuota()) {
+      <div class="quota-empty">
+        Has consumido todos los mensajes de la semana. Vuelve a probar el lunes.
+      </div>
+    }
+  </div>
+}

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ZodError } from 'zod';
-import User, { UserRole } from '../models/User';
+import User, { UserRole, ChatbotMode } from '../models/User';
 import Settings from '../models/Settings';
 import { registerSchema, loginSchema } from '../validators/authValidator';
 
@@ -175,6 +175,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
         username: userData.username,
         nombre: userData.nombre,
         role: userData.role,
+        chatbotMode: userData.chatbotMode,
       },
     });
   } catch (error) {
@@ -198,6 +199,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         username: user.username,
         nombre: user.nombre,
         role: user.role,
+        chatbotMode: user.chatbotMode,
         createdAt: user.createdAt,
       })),
     });
@@ -264,7 +266,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { username, nombre, role, password } = req.body;
+    const { username, nombre, role, password, chatbotMode } = req.body;
 
     const user = await User.findById(id);
     if (!user) {
@@ -289,6 +291,9 @@ export const updateUser = async (req: Request, res: Response) => {
     // Actualizar campos
     if (nombre) user.nombre = nombre;
     if (role) user.role = role;
+    if (chatbotMode && Object.values(ChatbotMode).includes(chatbotMode)) {
+      user.chatbotMode = chatbotMode;
+    }
     if (password) {
       // La contraseña se hashea automáticamente en el pre-save hook
       user.password = password;
@@ -303,6 +308,7 @@ export const updateUser = async (req: Request, res: Response) => {
         username: user.username,
         nombre: user.nombre,
         role: user.role,
+        chatbotMode: user.chatbotMode,
       },
       message: 'Usuario actualizado correctamente',
     });

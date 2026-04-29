@@ -5,6 +5,9 @@ export interface ISystemConfig extends Document {
   closureMessage: string;
   closedBy?: mongoose.Types.ObjectId;
   closedAt?: Date;
+  chatbotGloballyEnabled: boolean;
+  chatbotMessagesPerWeek: number;
+  chatbotMessagesPerWeekAdmin: number;
   updatedAt: Date;
 }
 
@@ -26,6 +29,20 @@ const SystemConfigSchema: Schema = new Schema(
     closedAt: {
       type: Date,
       required: false,
+    },
+    chatbotGloballyEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    chatbotMessagesPerWeek: {
+      type: Number,
+      default: 5,
+      min: 0,
+    },
+    chatbotMessagesPerWeekAdmin: {
+      type: Number,
+      default: 100,
+      min: 0,
     },
   },
   {
