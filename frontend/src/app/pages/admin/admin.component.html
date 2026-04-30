@@ -1,7 +1,7 @@
 <div class="container">
   <header class="header">
     <div class="header-content">
-      <img src="/assets/images/mma-logo.svg" alt="MMA Logo" class="logo" />
+      <!--<img src="/assets/images/mma-logo-2.png" alt="MMA Logo" class="logo" />-->
       <h1>Panel de Administración</h1>
     </div>
     <nav class="nav">
@@ -14,266 +14,215 @@
     </nav>
   </header>
 
-<!-- Gestión de Cierre Semanal -->
-<div class="card">
-  <h2>🔒 Gestión de Cierre de Pedidos</h2>
-  <p class="subtitle">Controla el acceso a los pedidos semanales</p>
+  <!-- Gestión de Cierre Semanal -->
+  <div class="card">
+    <h2>🔒 Gestión de Cierre de Pedidos</h2>
+    <p class="subtitle">Controla el acceso a los pedidos semanales</p>
 
-  <form [formGroup]="settingsForm" (ngSubmit)="onSubmitSettings()">
-    <!-- Estado de cierre -->
-    <div class="form-group">
-      <label class="checkbox-label">
-        <input type="checkbox" formControlName="ordersClosed" />
-        Cerrar pedidos temporalmente
-      </label>
-    </div>
-
-    <!-- Mensaje de cierre -->
-    <div class="form-group">
-      <label for="closedMessage">Mensaje de Cierre *</label>
-      <textarea
-        id="closedMessage"
-        class="form-control"
-        formControlName="closedMessage"
-        rows="3"
-        placeholder="Mensaje que verán los usuarios cuando los pedidos estén cerrados"
-      ></textarea>
-    </div>
-
-    <!-- Fecha de reapertura -->
-    <div class="form-group">
-      <label for="closedUntilDate">Fecha de Reapertura (Opcional)</label>
-      <input
-        type="datetime-local"
-        id="closedUntilDate"
-        class="form-control"
-        formControlName="closedUntilDate"
-      />
-      <small class="form-text">Si se especifica, se mostrará a los usuarios</small>
-    </div>
-
-    <!-- Mensajes -->
-    <div class="alert alert-danger" *ngIf="settingsErrorMessage">
-      {{ settingsErrorMessage }}
-    </div>
-
-    <div class="alert alert-success" *ngIf="settingsSuccessMessage">
-      {{ settingsSuccessMessage }}
-    </div>
-
-    <!-- Botón -->
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary" [disabled]="isSubmittingSettings">
-        {{ isSubmittingSettings ? 'Guardando...' : 'Guardar Configuración' }}
-      </button>
-    </div>
-  </form>
-
-  <div class="info-box">
-    <h3>ℹ️ Información</h3>
-    <ul>
-      <li>Cuando los pedidos están cerrados, los usuarios no podrán crear ni editar pedidos</li>
-      <li>Los usuarios verán el mensaje personalizado que configures</li>
-      <li>Los administradores siempre pueden crear y editar pedidos</li>
-      <li>Los usuarios pueden cancelar sus pedidos existentes incluso con cierre activo</li>
-    </ul>
-  </div>
-</div>
-
-<!-- Envío de Notificaciones Push -->
-<div class="card">
-  <h2>📢 Envío de Notificaciones Push</h2>
-  <p class="subtitle">Envía notificaciones manuales a todos los usuarios suscritos</p>
-
-  <form [formGroup]="notificationForm" (ngSubmit)="onSubmitNotification()">
-    <!-- Título -->
-    <div class="form-group">
-      <label for="notificationTitle">Título *</label>
-      <input
-        type="text"
-        id="notificationTitle"
-        class="form-control"
-        formControlName="title"
-        placeholder="Ej: ⏰ Recordatorio de pedidos"
-      />
-    </div>
-
-    <!-- Mensaje -->
-    <div class="form-group">
-      <label for="notificationBody">Mensaje *</label>
-      <textarea
-        id="notificationBody"
-        class="form-control"
-        formControlName="body"
-        rows="3"
-        placeholder="Ej: Quedan pocas horas para hacer tu pedido de bocadillo"
-      ></textarea>
-    </div>
-
-    <!-- Mensajes -->
-    <div class="alert alert-danger" *ngIf="notificationErrorMessage">
-      {{ notificationErrorMessage }}
-    </div>
-
-    <div class="alert alert-success" *ngIf="notificationSuccessMessage">
-      {{ notificationSuccessMessage }}
-    </div>
-
-    <!-- Botón -->
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary" [disabled]="isSubmittingNotification || notificationForm.invalid">
-        {{ isSubmittingNotification ? 'Enviando...' : 'Enviar Notificación' }}
-      </button>
-    </div>
-  </form>
-
-  <div class="info-box">
-    <h3>ℹ️ Información</h3>
-    <ul>
-      <li>Las notificaciones se enviarán a todos los usuarios que tengan activadas las notificaciones push</li>
-      <li>Solo se enviarán a usuarios que NO tengan pedido para la semana actual</li>
-      <li>No se enviarán notificaciones si los pedidos están cerrados temporalmente</li>
-      <li>Los usuarios recibirán la notificación en su dispositivo aunque no tengan la app abierta</li>
-    </ul>
-  </div>
-</div>
-
-<div class="card">
-  <h2>🧙‍♂️ Gestión del Bocadillo Alquimista</h2>
-  <p class="subtitle">Define el bocadillo sorpresa de esta semana</p>
-
-  <div class="loading" *ngIf="isLoading">Cargando...</div>
-
-  <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <!-- Tamaño -->
-    <div class="form-group">
-      <label>Tamaño *</label>
-      <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" formControlName="tamano" [value]="TamanoBocadillo.NORMAL" />
-          Normal
-        </label>
-        <label class="radio-label">
-          <input type="radio" formControlName="tamano" [value]="TamanoBocadillo.GRANDE" />
-          Grande
+    <form [formGroup]="settingsForm" (ngSubmit)="onSubmitSettings()">
+      <!-- Estado de cierre -->
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="ordersClosed" />
+          Cerrar pedidos temporalmente
         </label>
       </div>
-    </div>
 
-    <!-- Tipo de Pan -->
-    <div class="form-group">
-      <label>Tipo de Pan *</label>
-      <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" formControlName="tipoPan" [value]="TipoPan.NORMAL" />
-          Normal
-        </label>
-        <label class="radio-label">
-          <input
-            type="radio"
-            formControlName="tipoPan"
-            [value]="TipoPan.INTEGRAL"
-            [disabled]="isPanDisabled(TipoPan.INTEGRAL)"
-          />
-          Integral (solo normal)
-        </label>
-        <label class="radio-label">
-          <input
-            type="radio"
-            formControlName="tipoPan"
-            [value]="TipoPan.SEMILLAS"
-            [disabled]="isPanDisabled(TipoPan.SEMILLAS)"
-          />
-          Semillas (solo normal)
-        </label>
+      <!-- Mensaje de cierre -->
+      <div class="form-group">
+        <label for="closedMessage">Mensaje de Cierre *</label>
+        <textarea id="closedMessage" class="form-control" formControlName="closedMessage" rows="3"
+          placeholder="Mensaje que verán los usuarios cuando los pedidos estén cerrados"></textarea>
       </div>
+
+      <!-- Fecha de reapertura -->
+      <div class="form-group">
+        <label for="closedUntilDate">Fecha de Reapertura (Opcional)</label>
+        <input type="datetime-local" id="closedUntilDate" class="form-control" formControlName="closedUntilDate" />
+        <small class="form-text">Si se especifica, se mostrará a los usuarios</small>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="alert alert-danger" *ngIf="settingsErrorMessage">
+        {{ settingsErrorMessage }}
+      </div>
+
+      <div class="alert alert-success" *ngIf="settingsSuccessMessage">
+        {{ settingsSuccessMessage }}
+      </div>
+
+      <!-- Botón -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmittingSettings">
+          {{ isSubmittingSettings ? 'Guardando...' : 'Guardar Configuración' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="info-box">
+      <h3>ℹ️ Información</h3>
+      <ul>
+        <li>Cuando los pedidos están cerrados, los usuarios no podrán crear ni editar pedidos</li>
+        <li>Los usuarios verán el mensaje personalizado que configures</li>
+        <li>Los administradores siempre pueden crear y editar pedidos</li>
+        <li>Los usuarios pueden cancelar sus pedidos existentes incluso con cierre activo</li>
+      </ul>
     </div>
+  </div>
 
-    <!-- Ingredientes con Autocompletado -->
-    <div class="form-group">
-      <label for="ingredientes">Ingredientes Secretos *</label>
-      <div class="autocomplete-container">
-        <input
-          type="text"
-          id="ingredientes"
-          class="form-control"
-          [value]="ingredienteInput"
-          (input)="onIngredienteInputChange($event)"
-          placeholder="Buscar ingredientes..."
-        />
+  <!-- Envío de Notificaciones Push -->
+  <div class="card">
+    <h2>📢 Envío de Notificaciones Push</h2>
+    <p class="subtitle">Envía notificaciones manuales a todos los usuarios suscritos</p>
 
-        <!-- Lista de sugerencias -->
-        <ul class="suggestions" *ngIf="showIngredientesSuggestions">
-          <li
-            *ngFor="let ingrediente of ingredientesFiltrados"
-            (click)="agregarIngrediente(ingrediente)"
-          >
+    <form [formGroup]="notificationForm" (ngSubmit)="onSubmitNotification()">
+      <!-- Título -->
+      <div class="form-group">
+        <label for="notificationTitle">Título *</label>
+        <input type="text" id="notificationTitle" class="form-control" formControlName="title"
+          placeholder="Ej: ⏰ Recordatorio de pedidos" />
+      </div>
+
+      <!-- Mensaje -->
+      <div class="form-group">
+        <label for="notificationBody">Mensaje *</label>
+        <textarea id="notificationBody" class="form-control" formControlName="body" rows="3"
+          placeholder="Ej: Quedan pocas horas para hacer tu pedido de bocadillo"></textarea>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="alert alert-danger" *ngIf="notificationErrorMessage">
+        {{ notificationErrorMessage }}
+      </div>
+
+      <div class="alert alert-success" *ngIf="notificationSuccessMessage">
+        {{ notificationSuccessMessage }}
+      </div>
+
+      <!-- Botón -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmittingNotification || notificationForm.invalid">
+          {{ isSubmittingNotification ? 'Enviando...' : 'Enviar Notificación' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="info-box">
+      <h3>ℹ️ Información</h3>
+      <ul>
+        <li>Las notificaciones se enviarán a todos los usuarios que tengan activadas las notificaciones push</li>
+        <li>Solo se enviarán a usuarios que NO tengan pedido para la semana actual</li>
+        <li>No se enviarán notificaciones si los pedidos están cerrados temporalmente</li>
+        <li>Los usuarios recibirán la notificación en su dispositivo aunque no tengan la app abierta</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧙‍♂️ Gestión del Bocadillo Alquimista</h2>
+    <p class="subtitle">Define el bocadillo sorpresa de esta semana</p>
+
+    <div class="loading" *ngIf="isLoading">Cargando...</div>
+
+    <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Tamaño -->
+      <div class="form-group">
+        <label>Tamaño *</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" formControlName="tamano" [value]="TamanoBocadillo.NORMAL" />
+            Normal
+          </label>
+          <label class="radio-label">
+            <input type="radio" formControlName="tamano" [value]="TamanoBocadillo.GRANDE" />
+            Grande
+          </label>
+        </div>
+      </div>
+
+      <!-- Tipo de Pan -->
+      <div class="form-group">
+        <label>Tipo de Pan *</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" formControlName="tipoPan" [value]="TipoPan.NORMAL" />
+            Normal
+          </label>
+          <label class="radio-label">
+            <input type="radio" formControlName="tipoPan" [value]="TipoPan.INTEGRAL"
+              [disabled]="isPanDisabled(TipoPan.INTEGRAL)" />
+            Integral (solo normal)
+          </label>
+          <label class="radio-label">
+            <input type="radio" formControlName="tipoPan" [value]="TipoPan.SEMILLAS"
+              [disabled]="isPanDisabled(TipoPan.SEMILLAS)" />
+            Semillas (solo normal)
+          </label>
+        </div>
+      </div>
+
+      <!-- Ingredientes con Autocompletado -->
+      <div class="form-group">
+        <label for="ingredientes">Ingredientes Secretos *</label>
+        <div class="autocomplete-container">
+          <input type="text" id="ingredientes" class="form-control" [value]="ingredienteInput"
+            (input)="onIngredienteInputChange($event)" placeholder="Buscar ingredientes..." />
+
+          <!-- Lista de sugerencias -->
+          <ul class="suggestions" *ngIf="showIngredientesSuggestions">
+            <li *ngFor="let ingrediente of ingredientesFiltrados" (click)="agregarIngrediente(ingrediente)">
+              {{ ingrediente }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Ingredientes seleccionados -->
+        <div class="selected-items" *ngIf="ingredientesSeleccionados.length > 0">
+          <span *ngFor="let ingrediente of ingredientesSeleccionados" class="chip">
             {{ ingrediente }}
-          </li>
-        </ul>
+            <button type="button" class="chip-remove" (click)="quitarIngrediente(ingrediente)">
+              ×
+            </button>
+          </span>
+        </div>
+
+        <div class="error-message" *ngIf="ingredientesSeleccionados.length === 0 && errorMessage">
+          Debes seleccionar al menos un ingrediente
+        </div>
       </div>
 
-      <!-- Ingredientes seleccionados -->
-      <div class="selected-items" *ngIf="ingredientesSeleccionados.length > 0">
-        <span *ngFor="let ingrediente of ingredientesSeleccionados" class="chip">
-          {{ ingrediente }}
-          <button
-            type="button"
-            class="chip-remove"
-            (click)="quitarIngrediente(ingrediente)"
-          >
-            ×
-          </button>
-        </span>
+      <!-- Mensajes -->
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        {{ errorMessage }}
       </div>
 
-      <div class="error-message" *ngIf="ingredientesSeleccionados.length === 0 && errorMessage">
-        Debes seleccionar al menos un ingrediente
+      <div class="alert alert-success" *ngIf="successMessage">
+        {{ successMessage }}
       </div>
-    </div>
 
-    <!-- Mensajes -->
-    <div class="alert alert-danger" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
+      <!-- Botones -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Guardando...' : (alquimistaExistente ? 'Actualizar Alquimista' : 'Crear Alquimista') }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()" [disabled]="isSubmitting">
+          Limpiar
+        </button>
+        <button *ngIf="alquimistaExistente" type="button" class="btn btn-danger" (click)="deleteAlquimista()"
+          [disabled]="isSubmitting">
+          Eliminar Alquimista
+        </button>
+      </div>
+    </form>
 
-    <div class="alert alert-success" *ngIf="successMessage">
-      {{ successMessage }}
+    <div class="info-box">
+      <h3>ℹ️ Información</h3>
+      <ul>
+        <li>El bocadillo Alquimista es una opción sorpresa para los usuarios</li>
+        <li>Los usuarios pueden seleccionarlo pero no verán los ingredientes</li>
+        <li>Solo tú como administrador puedes ver y editar los ingredientes</li>
+        <li>Los ingredientes se revelarán en el export a WhatsApp</li>
+      </ul>
     </div>
-
-    <!-- Botones -->
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Guardando...' : (alquimistaExistente ? 'Actualizar Alquimista' : 'Crear Alquimista') }}
-      </button>
-      <button
-        type="button"
-        class="btn btn-secondary"
-        (click)="resetForm()"
-        [disabled]="isSubmitting"
-      >
-        Limpiar
-      </button>
-      <button
-        *ngIf="alquimistaExistente"
-        type="button"
-        class="btn btn-danger"
-        (click)="deleteAlquimista()"
-        [disabled]="isSubmitting"
-      >
-        Eliminar Alquimista
-      </button>
-    </div>
-  </form>
-
-  <div class="info-box">
-    <h3>ℹ️ Información</h3>
-    <ul>
-      <li>El bocadillo Alquimista es una opción sorpresa para los usuarios</li>
-      <li>Los usuarios pueden seleccionarlo pero no verán los ingredientes</li>
-      <li>Solo tú como administrador puedes ver y editar los ingredientes</li>
-      <li>Los ingredientes se revelarán en el export a WhatsApp</li>
-    </ul>
   </div>
-</div>
 </div>

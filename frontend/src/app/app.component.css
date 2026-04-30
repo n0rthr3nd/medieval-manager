@@ -2,25 +2,31 @@
    HEADER - Unified color palette
    ======================================== */
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: white;
-  border-bottom: 1px solid #E9ECEF;
-  padding: 16px 24px;
-  margin-bottom: 0;
-  box-shadow: none;
-  backdrop-filter: blur(10px);
+/* ========================================
+   HEADER LOGO
+   ======================================== */
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.header h1 {
+.header-logo .logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.header-logo h1 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
   color: #0A0D14;
+  white-space: nowrap;
 }
 
 /* User Info Section */

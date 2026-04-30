@@ -1,10 +1,10 @@
 <!-- Header con logo -->
-<div class="page-header">
+<!--<div class="page-header">
   <div class="header-content">
-    <img src="/assets/images/mma-logo.svg" alt="MMA Logo" class="logo" />
+    <img src="/assets/images/mma-logo-2.png" alt="MMA Logo" class="logo" />
     <h1>Medieval Manager Alchemist</h1>
   </div>
-</div>
+</div>-->
 
 <!-- Mensaje de cierre administrativo -->
 <div *ngIf="settings()?.ordersClosed" class="alert alert-danger">
@@ -31,10 +31,7 @@
 
 <!-- Botón de notificaciones push -->
 <div class="mb-4">
-  <button
-    class="btn btn-outline-primary"
-    (click)="togglePushNotifications()"
-    [disabled]="isSubscribing()">
+  <button class="btn btn-outline-primary" (click)="togglePushNotifications()" [disabled]="isSubscribing()">
     <span *ngIf="isSubscribing()">⏳ Procesando...</span>
     <span *ngIf="!isSubscribing() && !isSubscribedToPush()">🔔 Activar notificaciones</span>
     <span *ngIf="!isSubscribing() && isSubscribedToPush()">🔕 Desactivar notificaciones</span>
@@ -46,21 +43,15 @@
 
 <!-- Formulario (solo si está permitido pedir) -->
 <div *ngIf="isOrderingAllowed()">
-  <app-bocadillo-form
-    [editingBocadillo]="editingBocadillo()"
-    (bocadilloCreated)="onBocadilloCreated($event)"
+  <app-bocadillo-form [editingBocadillo]="editingBocadillo()" (bocadilloCreated)="onBocadilloCreated($event)"
     (bocadilloUpdated)="onBocadilloUpdated($event)" />
 </div>
 
 <!-- Lista de bocadillos -->
-<app-bocadillo-list
-  [refresh]="refreshList()"
-  (editRequested)="onEditRequested($event)" />
+<app-bocadillo-list [refresh]="refreshList()" (editRequested)="onEditRequested($event)" />
 
 <!-- Chat Recomendador IA - oculto si el nuevo chatbot está activo -->
-<app-chat-recomendador
-  *ngIf="!chatbotEnabled()"
-  (bocadilloCreado)="onBocadilloCreated($event)" />
+<app-chat-recomendador *ngIf="!chatbotEnabled()" (bocadilloCreado)="onBocadilloCreated($event)" />
 
 <!-- Chatbot conversacional (gated por User.chatbotMode) -->
 <app-chatbot (bocadilloAfectado)="onBocadilloAfectadoByChatbot($event)" />
