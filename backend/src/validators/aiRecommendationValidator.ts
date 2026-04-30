@@ -12,7 +12,7 @@ export const solicitarRecomendacionSchema = z.object({
 });
 
 /**
- * Schema para aceptar recomendación
+ * Schema para aceptar recomendación 
  */
 export const aceptarRecomendacionSchema = z.object({
   recomendacionId: z.string(),
