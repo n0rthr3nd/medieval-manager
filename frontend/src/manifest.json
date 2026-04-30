@@ -1,5 +1,5 @@
 {
-  "name": "Medieval Manager Alchemyst",
+  "name": "Medieval Manager Alchemist",
   "short_name": "MMA",
   "description": "Aplicación para gestionar pedidos semanales de bocadillos del equipo",
   "theme_color": "#667eea",
@@ -35,7 +35,11 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["productivity", "business", "food"],
+  "categories": [
+    "productivity",
+    "business",
+    "food"
+  ],
   "screenshots": [],
   "shortcuts": [
     {

@@ -1,8 +1,8 @@
-# Configuración de PWA - Medieval Manager Alchemyst
+# Configuración de PWA - Medieval Manager Alchemist
 
 ## Iconos de la Aplicación
 
-La aplicación necesita iconos en diferentes tamaños para funcionar correctamente como PWA. El logo de la aplicación (MMA - Medieval Manager Alchemyst) ya ha sido proporcionado.
+La aplicación necesita iconos en diferentes tamaños para funcionar correctamente como PWA. El logo de la aplicación (MMA - Medieval Manager Alchemist) ya ha sido proporcionado.
 
 ### Generación de Iconos
 
