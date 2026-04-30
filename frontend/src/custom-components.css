@@ -1,14 +1,12 @@
 /* ========================================
-   MEDIEVAL MANAGER - Global Styles
+   MEDIEVAL MANAGER - Custom Components
    Unified color palette with high contrast
    ======================================== */
 
-/* ========================================
-   CSS Custom Properties (Variables)
-   ======================================== */
-
 :root {
-  /* Brand colors */
+  /* ========================================
+     BRAND COLORS - Unified palette
+     ======================================== */
   --brand-primary: #0075FF;
   --brand-primary-hover: #0062d9;
   --brand-primary-active: #0052b8;
@@ -17,7 +15,9 @@
   --brand-gradient: linear-gradient(135deg, #0075FF 0%, #00C6FF 100%);
   --brand-dark: #0A0D14;
 
-  /* Neutral colors */
+  /* ========================================
+     NEUTRAL COLORS - Dark theme base
+     ======================================== */
   --neutral-50: #F8F9FA;
   --neutral-100: #F1F3F5;
   --neutral-200: #E9ECEF;
@@ -29,38 +29,53 @@
   --neutral-800: #212529;
   --neutral-900: #0A0D14;
 
-  /* Semantic colors */
+  /* ========================================
+     SEMANTIC COLORS - High contrast
+     ======================================== */
   --success: #00D06C;
   --success-light: #E6FAF1;
   --success-dark: #00A857;
+
   --warning: #FFA726;
   --warning-light: #FFF3E0;
   --warning-dark: #F57C00;
+
   --error: #FF5252;
   --error-light: #FFEBEE;
   --error-dark: #E53935;
+
   --info: #0075FF;
   --info-light: #E6F2FF;
   --info-dark: #0052B8;
 
-  /* Backgrounds */
+  /* ========================================
+     BACKGROUNDS & SURFACES
+     ======================================== */
   --bg-primary: #FFFFFF;
   --bg-secondary: #F8F9FA;
   --bg-tertiary: #F1F3F5;
   --bg-card: #FFFFFF;
+  --bg-overlay: rgba(10, 13, 20, 0.6);
 
-  /* Text colors */
+  /* ========================================
+     TEXT COLORS - WCAG compliant contrast
+     ======================================== */
   --text-primary: #0A0D14;
   --text-secondary: #495057;
   --text-tertiary: #6C757D;
+  --text-inverse: #FFFFFF;
   --text-muted: #ADB5BD;
 
-  /* Borders */
+  /* ========================================
+     BORDERS
+     ======================================== */
   --border-primary: #E9ECEF;
   --border-secondary: #DEE2E6;
   --border-focus: #0075FF;
 
-  /* Spacing */
+  /* ========================================
+     SPACING - 4px grid system
+     ======================================== */
   --spacing-1: 4px;
   --spacing-2: 8px;
   --spacing-3: 12px;
@@ -72,8 +87,11 @@
   --spacing-10: 40px;
   --spacing-12: 48px;
   --spacing-16: 64px;
+  --spacing-20: 80px;
 
-  /* Border radius */
+  /* ========================================
+     BORDER RADIUS - Consistent rounding
+     ======================================== */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -81,31 +99,65 @@
   --radius-2xl: 28px;
   --radius-full: 9999px;
 
-  /* Shadows */
+  /* ========================================
+     SHADOWS - Subtle depth
+     ======================================== */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 12px 24px 0 rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0 20px 40px 0 rgba(0, 0, 0, 0.15);
   --shadow-brand: 0 8px 20px 0 rgba(0, 117, 255, 0.2);
   --shadow-focus: 0 0 0 4px rgba(0, 117, 255, 0.15);
 
-  /* Typography */
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+
   --leading-tight: 1.25;
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 
-  /* Transitions */
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ========================================
+     Z-INDEX
+     ======================================== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
 }
 
 /* ========================================
@@ -135,13 +187,48 @@ body {
 }
 
 /* ========================================
-   UTILITIES
+   UTILITIES - Combined CSS + Tailwind
    ======================================== */
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--spacing-6);
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card h2 {
+  margin: 0 0 var(--spacing-6) 0;
+  color: var(--text-primary);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+}
+
+.card h3 {
+  margin: 0 0 var(--spacing-4) 0;
+  color: var(--text-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  letter-spacing: -0.01em;
 }
 
 /* ========================================
@@ -156,13 +243,17 @@ body {
   padding: var(--spacing-4) var(--spacing-6);
   border: none;
   border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
   line-height: 1.2;
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
+  user-select: none;
+  text-decoration: none;
   min-height: 48px;
+  position: relative;
 }
 
 .btn:focus-visible {
@@ -184,20 +275,32 @@ body {
 
 .btn-primary:active:not(:disabled) {
   transform: scale(0.98);
+  box-shadow: var(--shadow-xs);
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-secondary {
   background: var(--bg-tertiary);
   color: var(--text-primary);
+  box-shadow: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--neutral-200);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-danger {
@@ -208,6 +311,17 @@ body {
 
 .btn-danger:hover:not(:disabled) {
   background: var(--error-dark);
+  box-shadow: 0 8px 20px 0 rgba(255, 82, 82, 0.3);
+  transform: scale(1.02);
+}
+
+.btn-danger:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-outline-primary {
@@ -218,6 +332,13 @@ body {
 
 .btn-outline-primary:hover:not(:disabled) {
   background: var(--brand-primary-light);
+  border-color: var(--brand-primary-hover);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 /* ========================================
@@ -234,6 +355,7 @@ body {
   color: var(--text-primary);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
+  letter-spacing: -0.01em;
 }
 
 .form-control {
@@ -241,11 +363,16 @@ body {
   padding: var(--spacing-4) var(--spacing-4);
   border: 2px solid var(--neutral-200);
   border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--text-primary);
   background: var(--bg-primary);
   transition: all var(--transition-base);
   min-height: 52px;
+}
+
+.form-control:hover {
+  border-color: var(--neutral-300);
 }
 
 .form-control:focus {
@@ -262,6 +389,7 @@ body {
 textarea.form-control {
   resize: vertical;
   min-height: 100px;
+  line-height: var(--leading-relaxed);
 }
 
 select.form-control {
@@ -271,6 +399,13 @@ select.form-control {
   background-repeat: no-repeat;
   background-position: right var(--spacing-3) center;
   padding-right: var(--spacing-10);
+}
+
+.form-text {
+  display: block;
+  margin-top: var(--spacing-2);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .error-message {
@@ -287,6 +422,22 @@ select.form-control {
   margin-top: var(--spacing-8);
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+
+.checkbox-label input[type="checkbox"],
+.checkbox-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--brand-primary);
+}
+
 /* ========================================
    ALERTS
    ======================================== */
@@ -298,6 +449,12 @@ select.form-control {
   margin-bottom: var(--spacing-6);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
+}
+
+.alert h4 {
+  margin: 0 0 var(--spacing-2) 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
 }
 
 .alert-success {
@@ -325,86 +482,212 @@ select.form-control {
 }
 
 /* ========================================
-   CARDS
+   INFO BOX
    ======================================== */
 
-.card {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
+.info-box {
+  background: var(--neutral-50);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-6);
-  margin-bottom: var(--spacing-4);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-base);
+  margin-top: var(--spacing-6);
 }
 
-.card:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.card h2 {
-  margin: 0 0 var(--spacing-6) 0;
+.info-box h3 {
+  margin: 0 0 var(--spacing-3) 0;
   color: var(--text-primary);
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-}
-
-.card h3 {
-  margin: 0 0 var(--spacing-4) 0;
-  color: var(--text-primary);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--font-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.info-box ul {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  color: var(--text-secondary);
+}
+
+.info-box li {
+  margin-bottom: var(--spacing-2);
+  line-height: var(--leading-relaxed);
+}
+
+/* ========================================
+   LOADING
+   ======================================== */
+
+.loading {
+  text-align: center;
+  padding: var(--spacing-12);
+  color: var(--text-secondary);
+  font-size: var(--text-lg);
+}
+
+/* ========================================
+   TEXT UTILITIES
+   ======================================== */
+
+.text-muted {
+  color: var(--text-secondary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-6);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
 }
 
 /* ========================================
    SPACING UTILITIES
    ======================================== */
 
-.mb-4 { margin-bottom: var(--spacing-4); }
-.mt-2 { margin-top: var(--spacing-2); }
-.d-block { display: block; }
-.d-flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
+.mb-4 {
+  margin-bottom: var(--spacing-4);
+}
+
+.mt-2 {
+  margin-top: var(--spacing-2);
+}
+
+.d-block {
+  display: block;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-1 { gap: var(--spacing-1); }
 .gap-2 { gap: var(--spacing-2); }
 .gap-3 { gap: var(--spacing-3); }
 .gap-4 { gap: var(--spacing-4); }
-.text-muted { color: var(--text-secondary); }
-.subtitle { color: var(--text-secondary); margin-bottom: var(--spacing-6); font-size: var(--text-sm); }
 
 /* ========================================
    RESPONSIVE
    ======================================== */
 
 @media (max-width: 768px) {
-  .container { padding: var(--spacing-4); }
-  .card { padding: var(--spacing-6); }
-  .card h2 { font-size: var(--text-xl); }
-  .form-actions { flex-direction: column; }
-  .btn { width: 100%; }
+  .container {
+    padding: var(--spacing-4);
+  }
+
+  .card {
+    padding: var(--spacing-6);
+  }
+
+  .card h2 {
+    font-size: var(--text-xl);
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }
 
 /* ========================================
    ANIMATIONS
    ======================================== */
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes slideInFromLeft { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-.fade-in { animation: fadeIn var(--transition-base); }
-.slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-.slide-in-left { animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-.scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
-/* ========================================
-   SKELETON & LOADING
-   ======================================== */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-base);
+}
+
+.slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-in-left {
+  animation: slideInFromLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Skeleton loading */
 .skeleton {
   background: linear-gradient(90deg, var(--neutral-200) 25%, var(--neutral-100) 50%, var(--neutral-200) 75%);
   background-size: 1000px 100%;
@@ -412,18 +695,7 @@ select.form-control {
   border-radius: var(--radius-md);
 }
 
-.loading-pulse { animation: pulse 1.5s ease-in-out infinite; }
-
-/* ========================================
-   TAILWIND UTILITIES (via CDN for compatibility)
-   ======================================== */
-
-/* Utility classes for common patterns */
-.text-brand { color: var(--brand-primary); }
-.bg-brand { background-color: var(--brand-primary); }
-.text-success { color: var(--success); }
-.bg-success { background-color: var(--success); }
-.text-error { color: var(--error); }
-.bg-error { background-color: var(--error); }
-.text-warning { color: var(--warning); }
-.bg-warning { background-color: var(--warning); }
+/* Loading pulse */
+.loading-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}

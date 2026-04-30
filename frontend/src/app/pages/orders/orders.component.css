@@ -1,83 +1,82 @@
 /* ========================================
-   ORDERS PAGE - Revolut style
+   ORDERS PAGE - Unified color palette
    ======================================== */
 
 .page-header {
   position: sticky;
   top: 0;
   z-index: 99;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--neutral-200);
-  padding: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
+  background: white;
+  border-bottom: 1px solid #E9ECEF;
+  padding: 16px;
+  margin-bottom: 16px;
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.98);
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+  gap: 16px;
 }
 
 .logo {
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
 }
 
 .page-header h1 {
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
+  font-size: 1.25rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: var(--leading-tight);
-  color: var(--text-primary);
+  line-height: 1.25;
+  color: #0A0D14;
 }
 
-/* Alert styles - Revolut */
+/* Alert styles - Unified */
 .alert {
-  margin: var(--spacing-4);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-lg);
+  margin: 16px;
+  padding: 16px;
+  border-radius: 16px;
   border: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }
 
 .alert h4 {
-  margin: 0 0 var(--spacing-2) 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-bold);
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .alert p {
-  margin: var(--spacing-2) 0 0 0;
-  font-size: var(--text-sm);
+  margin: 8px 0 0 0;
+  font-size: 0.875rem;
 }
 
 .alert-success {
-  background: var(--success-light);
-  color: var(--success-dark);
+  background: #E6FAF1;
+  color: #00A857;
 }
 
 .alert-warning {
-  background: var(--warning-light);
-  color: var(--warning-dark);
+  background: #FFF3E0;
+  color: #F57C00;
 }
 
 .alert-danger {
-  background: var(--error-light);
-  color: var(--error-dark);
+  background: #FFEBEE;
+  color: #E53935;
 }
 
 /* Notification button */
 .mb-4 {
-  margin: var(--spacing-4);
+  margin: 16px;
 }
 
 /* Spacing utilities */
 .mt-2 {
-  margin-top: var(--spacing-2);
+  margin-top: 8px;
 }
 
 .d-block {
@@ -85,8 +84,8 @@
 }
 
 .text-muted {
-  color: var(--text-secondary);
-  font-size: var(--text-sm);
+  color: #495057;
+  font-size: 0.875rem;
 }
 
 /* ========================================
@@ -95,11 +94,11 @@
 
 @media (max-width: 768px) {
   .page-header {
-    padding: var(--spacing-3);
+    padding: 12px;
   }
 
   .header-content {
-    gap: var(--spacing-3);
+    gap: 12px;
   }
 
   .logo {
@@ -108,11 +107,11 @@
   }
 
   .page-header h1 {
-    font-size: var(--text-lg);
+    font-size: 1.125rem;
   }
 
   .alert {
-    margin: var(--spacing-3);
-    padding: var(--spacing-3);
+    margin: 12px;
+    padding: 12px;
   }
 }

@@ -1,27 +1,26 @@
 /* ========================================
-   HEADER - Revolut style minimal header
+   HEADER - Unified color palette
    ======================================== */
 
 .header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--neutral-200);
-  padding: var(--spacing-4) var(--spacing-6);
+  background: white;
+  border-bottom: 1px solid #E9ECEF;
+  padding: 16px 24px;
   margin-bottom: 0;
   box-shadow: none;
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
 }
 
 .header h1 {
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
+  font-size: 1.5rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: var(--leading-tight);
-  color: var(--text-primary);
+  line-height: 1.25;
+  color: #0A0D14;
 }
 
 /* User Info Section */
@@ -29,39 +28,39 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--spacing-3);
+  gap: 12px;
 }
 
 .user-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
-  background: var(--bg-tertiary);
-  padding: var(--spacing-2) var(--spacing-3);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
+  gap: 8px;
+  background: #F1F3F5;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0A0D14;
 }
 
 .btn-logout {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: 8px;
   background: transparent;
-  color: var(--text-secondary);
+  color: #495057;
   border: none;
-  padding: var(--spacing-2) var(--spacing-3);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-logout:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: #F1F3F5;
+  color: #0A0D14;
 }
 
 .btn-logout:active {
@@ -69,7 +68,7 @@
 }
 
 /* ========================================
-   NAVIGATION - Revolut bottom navigation
+   NAVIGATION - Unified bottom navigation
    ======================================== */
 
 .nav-tabs {
@@ -81,13 +80,12 @@
   display: flex;
   justify-content: space-around;
   gap: 0;
-  background: var(--bg-primary);
-  padding: var(--spacing-2) var(--spacing-3);
-  padding-bottom: calc(var(--spacing-2) + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--neutral-200);
+  background: white;
+  padding: 8px 12px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid #E9ECEF;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.98);
 }
 
 .nav-tab {
@@ -97,10 +95,10 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: var(--spacing-2) var(--spacing-1);
+  padding: 8px 4px;
   text-decoration: none;
-  color: var(--text-tertiary);
-  transition: all var(--transition-fast);
+  color: #6C757D;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: none;
   background: transparent;
@@ -109,14 +107,14 @@
 }
 
 .nav-tab:hover:not(.active) {
-  color: var(--text-secondary);
+  color: #495057;
 }
 
 .nav-tab.active {
-  color: var(--brand-primary);
+  color: #0075FF;
 }
 
-/* Active indicator dot (Revolut style) */
+/* Active indicator dot */
 .nav-tab.active .icon::after {
   content: '';
   position: absolute;
@@ -124,7 +122,7 @@
   right: -4px;
   width: 6px;
   height: 6px;
-  background: var(--brand-primary);
+  background: #0075FF;
   border-radius: 50%;
 }
 
@@ -136,7 +134,7 @@
 
 .nav-tab .label {
   font-size: 11px;
-  font-weight: var(--font-medium);
+  font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
 }
@@ -147,16 +145,16 @@
 
 .footer {
   text-align: center;
-  padding: var(--spacing-8) var(--spacing-6);
-  padding-bottom: calc(var(--spacing-8) + 80px + env(safe-area-inset-bottom));
-  color: var(--text-tertiary);
-  font-size: var(--text-xs);
-  margin-top: var(--spacing-12);
+  padding: 48px 24px;
+  padding-bottom: calc(48px + 80px + env(safe-area-inset-bottom));
+  color: #6C757D;
+  font-size: 0.75rem;
+  margin-top: 48px;
 }
 
 .footer p {
   margin: 0;
-  font-weight: var(--font-normal);
+  font-weight: 400;
 }
 
 /* ========================================
@@ -169,30 +167,30 @@
 }
 
 /* ========================================
-   MOBILE RESPONSIVE
+   RESPONSIVE
    ======================================== */
 
 @media (max-width: 768px) {
   .header {
-    padding: var(--spacing-3) var(--spacing-4);
+    padding: 12px 16px;
   }
 
   .header h1 {
-    font-size: var(--text-lg);
+    font-size: 1.25rem;
   }
 
   .user-info {
-    gap: var(--spacing-2);
+    gap: 8px;
   }
 
   .user-badge {
     font-size: 11px;
-    padding: var(--spacing-1) var(--spacing-2);
+    padding: 4px 8px;
   }
 
   .btn-logout {
     font-size: 11px;
-    padding: var(--spacing-1) var(--spacing-2);
+    padding: 4px 8px;
   }
 
   .nav-tab .icon {
@@ -205,11 +203,10 @@
 }
 
 @media (min-width: 769px) {
-  /* Desktop: move nav to side or keep at bottom - for now keep at bottom */
   .nav-tabs {
     max-width: 600px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-radius: 28px 28px 0 0;
   }
 }

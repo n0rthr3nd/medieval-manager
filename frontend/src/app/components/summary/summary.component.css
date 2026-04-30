@@ -1,3 +1,7 @@
+/* ========================================
+   SUMMARY - Unified color palette
+   ======================================== */
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -9,8 +13,9 @@
 
 .card-header h2 {
   margin: 0;
-  color: var(--primary-color);
+  color: #0A0D14;
   font-size: 24px;
+  font-weight: 700;
 }
 
 .btn-export {
@@ -28,7 +33,7 @@
 }
 
 .summary-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0075FF 0%, #00C6FF 100%);
   color: white;
 }
 
@@ -42,12 +47,12 @@
 }
 
 .summary-table tbody tr {
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #E9ECEF;
   transition: background-color 0.2s ease;
 }
 
 .summary-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: #F8F9FA;
 }
 
 .summary-table td {
@@ -57,7 +62,7 @@
 
 .nombre-cell {
   font-weight: 600;
-  color: var(--primary-color);
+  color: #0A0D14;
 }
 
 .badge {
@@ -66,12 +71,12 @@
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
-  background-color: #28a745;
+  background-color: #00D06C;
   color: white;
 }
 
 .badge-grande {
-  background-color: #ff6b6b;
+  background-color: #E53935;
 }
 
 .ingredientes-cell {
@@ -82,8 +87,8 @@
   display: inline-block;
   padding: 4px 8px;
   margin: 2px;
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: #E6F2FF;
+  color: #0075FF;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 500;
@@ -92,24 +97,24 @@
 .bocata-predefinido {
   display: inline-block;
   padding: 4px 12px;
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #FFF3E0;
+  color: #F57C00;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
 }
 
 .text-muted {
-  color: #6c757d;
+  color: #6C757D;
   font-style: italic;
 }
 
 .summary-footer {
   margin-top: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0075FF 0%, #00C6FF 100%);
   color: white;
-  border-radius: 8px;
+  border-radius: 16px;
   text-align: center;
   font-size: 18px;
 }
@@ -119,24 +124,19 @@
     flex-direction: column;
     align-items: stretch;
   }
-
   .btn-export {
     width: 100%;
   }
-
   .summary-table {
     font-size: 12px;
   }
-
   .summary-table th,
   .summary-table td {
     padding: 8px 6px;
   }
-
   .ingredientes-cell {
     max-width: 150px;
   }
-
   .ingrediente-chip {
     font-size: 10px;
     padding: 3px 6px;

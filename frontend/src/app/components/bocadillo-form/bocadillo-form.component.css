@@ -1,50 +1,50 @@
 /* ========================================
-   BOCADILLO FORM - Revolut style
+   BOCADILLO FORM - Unified color palette
    ======================================== */
 
 .card-title-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-6);
+  margin-bottom: 24px;
   flex-wrap: wrap;
-  gap: var(--spacing-3);
-  padding: 0 var(--spacing-4);
+  gap: 12px;
+  padding: 0 16px;
 }
 
 h2 {
   margin: 0;
-  color: var(--text-primary);
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
+  color: #0A0D14;
+  font-size: 1.5rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .user-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: var(--brand-primary);
+  gap: 8px;
+  padding: 8px 16px;
+  background: #0075FF;
   color: white;
-  border-radius: var(--radius-full);
-  font-weight: var(--font-semibold);
-  font-size: var(--text-sm);
-  box-shadow: var(--shadow-sm);
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }
 
 .user-icon {
-  font-size: var(--text-base);
+  font-size: 1rem;
 }
 
 .user-name {
   letter-spacing: 0.01em;
 }
 
-/* Radio Group - Revolut style selection */
+/* Radio Group - unified selection */
 .radio-group {
   display: flex;
-  gap: var(--spacing-3);
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -53,34 +53,34 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-4);
-  border: 2px solid var(--neutral-200);
-  border-radius: var(--radius-lg);
+  gap: 8px;
+  padding: 16px;
+  border: 2px solid #E9ECEF;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all var(--transition-base);
-  font-weight: var(--font-semibold);
-  background: var(--bg-primary);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  background: white;
   min-height: 56px;
 }
 
 .radio-label:hover:not(:has(input:disabled)) {
-  border-color: var(--brand-primary);
-  background-color: var(--brand-primary-light);
+  border-color: #0075FF;
+  background-color: #E6F2FF;
   transform: scale(1.02);
 }
 
 .radio-label:has(input:checked) {
-  border-color: var(--brand-primary);
-  background-color: var(--brand-primary);
+  border-color: #0075FF;
+  background-color: #0075FF;
   color: white;
-  box-shadow: var(--shadow-brand);
+  box-shadow: 0 8px 20px 0 rgba(0, 117, 255, 0.2);
 }
 
 .radio-label:has(input:disabled) {
   opacity: 0.4;
   cursor: not-allowed;
-  background-color: var(--neutral-100);
+  background-color: #F1F3F5;
 }
 
 .radio-label input[type='radio'] {
@@ -90,7 +90,7 @@ h2 {
   accent-color: white;
 }
 
-/* Autocomplete - Revolut style dropdown */
+/* Autocomplete - unified dropdown */
 .autocomplete-container {
   position: relative;
 }
@@ -100,26 +100,26 @@ h2 {
   top: 100%;
   left: 0;
   right: 0;
-  background: var(--bg-primary);
-  border: 2px solid var(--brand-primary);
+  background: white;
+  border: 2px solid #0075FF;
   border-top: none;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  border-radius: 0 0 16px 16px;
   max-height: 280px;
   overflow-y: auto;
-  z-index: var(--z-dropdown);
+  z-index: 1000;
   list-style: none;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
   margin-top: -2px;
 }
 
 .suggestions li {
-  padding: var(--spacing-4) var(--spacing-4);
+  padding: 16px 16px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--text-primary);
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
-  border-bottom: 1px solid var(--neutral-200);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: #0A0D14;
+  font-size: 1rem;
+  font-weight: 500;
+  border-bottom: 1px solid #E9ECEF;
 }
 
 .suggestions li:last-child {
@@ -127,41 +127,41 @@ h2 {
 }
 
 .suggestions li:hover {
-  background-color: var(--brand-primary-light);
-  color: var(--brand-primary);
+  background-color: #E6F2FF;
+  color: #0075FF;
 }
 
 .suggestions li:active {
-  background-color: var(--brand-primary);
+  background-color: #0075FF;
   color: white;
 }
 
-/* Selected Items - Revolut style chips */
+/* Selected Items - unified chips */
 .selected-items {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-2);
-  margin-top: var(--spacing-3);
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background-color: var(--brand-primary);
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #0075FF;
   color: white;
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  box-shadow: var(--shadow-xs);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .chip-remove {
   background: rgba(255, 255, 255, 0.25);
   border: none;
   color: white;
-  font-size: var(--text-base);
+  font-size: 1rem;
   cursor: pointer;
   padding: 0;
   width: 20px;
@@ -170,8 +170,8 @@ h2 {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all var(--transition-fast);
-  font-weight: var(--font-bold);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 700;
 }
 
 .chip-remove:hover {
@@ -186,9 +186,9 @@ h2 {
 /* Form Actions */
 .form-actions {
   display: flex;
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-6);
-  padding: 0 var(--spacing-4);
+  gap: 12px;
+  margin-top: 24px;
+  padding: 0 16px;
 }
 
 /* Load Last Bocadillo Button */
@@ -199,8 +199,8 @@ h2 {
 
 /* Card wrapper */
 .card {
-  padding: var(--spacing-6) 0;
-  margin-bottom: var(--spacing-4);
+  padding: 24px 0;
+  margin-bottom: 16px;
 }
 
 /* ========================================
@@ -211,11 +211,11 @@ h2 {
   .card-title-container {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--spacing-3);
+    gap: 12px;
   }
 
   h2 {
-    font-size: var(--text-xl);
+    font-size: 1.25rem;
   }
 
   .form-actions {
@@ -224,7 +224,7 @@ h2 {
 
   .radio-group {
     flex-direction: column;
-    gap: var(--spacing-2);
+    gap: 8px;
   }
 
   .radio-label {

@@ -1,3 +1,7 @@
+/* ========================================
+   ESTADISTICAS - Unified color palette
+   ======================================== */
+
 .estadisticas-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -5,23 +9,23 @@
 }
 
 h1 {
-  color: #333;
+  color: #0A0D14;
   text-align: center;
   margin-bottom: 30px;
   font-size: 2rem;
 }
 
 h2 {
-  color: #444;
+  color: #0A0D14;
   margin-top: 40px;
   margin-bottom: 20px;
   font-size: 1.5rem;
-  border-bottom: 2px solid #8b4513;
+  border-bottom: 2px solid #E9ECEF;
   padding-bottom: 10px;
 }
 
 h3 {
-  color: #555;
+  color: #495057;
   margin-bottom: 15px;
   font-size: 1.1rem;
 }
@@ -33,13 +37,18 @@ h3 {
   text-align: center;
   padding: 40px;
   font-size: 1.2rem;
+  color: #6C757D;
 }
 
 .error-message {
-  color: #d32f2f;
-  background-color: #ffebee;
+  color: #E53935;
+  background-color: #FFEBEE;
   border-radius: 8px;
   margin: 20px 0;
+}
+
+.error-message p {
+  margin: 0;
 }
 
 /* Stats Overview */
@@ -51,18 +60,18 @@ h3 {
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0075FF 0%, #00C6FF 100%);
   color: white;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
   text-align: center;
-  transition: transform 0.3s ease;
+  transition: transform 200ms ease;
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.12);
 }
 
 .stat-card h3 {
@@ -75,9 +84,9 @@ h3 {
 
 .stat-number {
   font-size: 2.5rem;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
-  color: #fff;
+  color: white;
 }
 
 /* Último Bocadillo */
@@ -86,11 +95,11 @@ h3 {
 }
 
 .ultimo-bocadillo-card {
-  background: #fff;
-  border: 2px solid #8b4513;
-  border-radius: 10px;
+  background: white;
+  border: 2px solid #E9ECEF;
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.06);
 }
 
 .bocadillo-info {
@@ -101,31 +110,31 @@ h3 {
 
 .bocadillo-description {
   font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: #0A0D14;
   margin: 0;
 }
 
 .bocadillo-date {
-  color: #666;
+  color: #6C757D;
   font-size: 0.9rem;
   margin: 0;
 }
 
 .bocadillo-price {
   font-size: 1.1rem;
-  color: #333;
+  color: #0A0D14;
   margin: 0;
 }
 
 .pagado {
-  color: #4caf50;
-  font-weight: bold;
+  color: #00D06C;
+  font-weight: 700;
 }
 
 .pendiente {
-  color: #ff9800;
-  font-weight: bold;
+  color: #FFA726;
+  font-weight: 700;
 }
 
 /* Charts */
@@ -147,16 +156,16 @@ h3 {
 }
 
 .chart-card {
-  background: #fff;
-  border-radius: 10px;
+  background: white;
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #E9ECEF;
 }
 
 .chart-card h3 {
   text-align: center;
-  color: #8b4513;
+  color: #0A0D14;
   margin-bottom: 20px;
 }
 
@@ -180,9 +189,9 @@ h3 {
 
 /* User Stats Summary */
 .user-stats-summary {
-  background: #f5f5f5;
-  padding: 15px;
-  border-radius: 8px;
+  background: #F8F9FA;
+  padding: 20px;
+  border-radius: 16px;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -190,11 +199,11 @@ h3 {
 .user-stats-summary p {
   margin: 0;
   font-size: 1.1rem;
-  color: #333;
+  color: #495057;
 }
 
 .user-stats-summary strong {
-  color: #8b4513;
+  color: #0075FF;
   font-size: 1.3rem;
 }
 
