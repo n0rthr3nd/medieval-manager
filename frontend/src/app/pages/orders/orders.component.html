@@ -57,8 +57,9 @@
   [refresh]="refreshList()"
   (editRequested)="onEditRequested($event)" />
 
-<!-- Chat Recomendador IA (solo si está permitido pedir) *ngIf="isOrderingAllowed()" -->
+<!-- Chat Recomendador IA - oculto si el nuevo chatbot está activo -->
 <app-chat-recomendador
+  *ngIf="!chatbotEnabled()"
   (bocadilloCreado)="onBocadilloCreated($event)" />
 
 <!-- Chatbot conversacional (gated por User.chatbotMode) -->
