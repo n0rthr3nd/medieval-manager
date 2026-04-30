@@ -61,18 +61,6 @@ export const BOCATAS_PREDEFINIDOS: BocataPredefinido[] = [
     tipoPan: TipoPan.NORMAL,
   },
   {
-    nombre: 'Alquimista Pollo Miel',
-    ingredientes: ['Pollo Miel', 'Patata'],
-    tamano: TamanoBocadillo.NORMAL,
-    tipoPan: TipoPan.NORMAL,
-  },
-  {
-    nombre: 'Grande Alquimista Pollo Miel',
-    ingredientes: ['Pollo Miel', 'Patata'],
-    tamano: TamanoBocadillo.GRANDE,
-    tipoPan: TipoPan.NORMAL,
-  },
-  {
     nombre: 'Alquimista Carrillada Francesa',
     ingredientes: ['Carillada', 'Tortilla francesa', 'Queso semi'],
     tamano: TamanoBocadillo.NORMAL,
@@ -90,7 +78,7 @@ export const BOCATAS_PREDEFINIDOS: BocataPredefinido[] = [
     tamano: TamanoBocadillo.NORMAL,
     tipoPan: TipoPan.NORMAL,
   },
-{
+  {
     nombre: 'Grande Alquimista Jamon Tortilla Patata',
     ingredientes: ['Jamón', 'Tortilla patata', 'Tomate restregado'],
     tamano: TamanoBocadillo.GRANDE,

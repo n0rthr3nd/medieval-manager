@@ -3,11 +3,18 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
+export enum ChatbotMode {
+  DISABLED = 'disabled',
+  BETA = 'beta',
+  ENABLED = 'enabled',
+}
+
 export interface User {
   id: string;
   username: string;
   nombre: string;
   role: UserRole;
+  chatbotMode?: ChatbotMode;
   createdAt?: Date;
 }
 

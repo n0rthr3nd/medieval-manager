@@ -12,6 +12,7 @@ import systemConfigRoutes from './routes/systemConfigRoutes';
 import pushRoutes from './routes/pushRoutes';
 import estadisticasRoutes from './routes/estadisticasRoutes';
 import aiRecommendationRoutes from './routes/aiRecommendationRoutes';
+import chatbotRoutes from './routes/chatbotRoutes';
 import User, { UserRole } from './models/User';
 import Ingrediente from './models/Ingrediente';
 import { INGREDIENTES_DISPONIBLES } from './config/menu';
@@ -52,6 +53,7 @@ app.use('/api/system', systemConfigRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/estadisticas', estadisticasRoutes);
 app.use('/api/ai-recommendations', aiRecommendationRoutes);
+app.use('/api/chat', chatbotRoutes);
 
 // Ruta 404
 app.use((req, res) => {

@@ -6,11 +6,18 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
+export enum ChatbotMode {
+  DISABLED = 'disabled',
+  BETA = 'beta',
+  ENABLED = 'enabled',
+}
+
 export interface IUser extends Document {
   username: string;
   password: string;
   nombre: string;
   role: UserRole;
+  chatbotMode: ChatbotMode;
   createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -38,6 +45,11 @@ const UserSchema: Schema = new Schema({
     type: String,
     enum: Object.values(UserRole),
     default: UserRole.USER,
+  },
+  chatbotMode: {
+    type: String,
+    enum: Object.values(ChatbotMode),
+    default: ChatbotMode.DISABLED,
   },
   createdAt: {
     type: Date,

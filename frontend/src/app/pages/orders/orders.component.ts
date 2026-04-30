@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BocadilloFormComponent } from '../../components/bocadillo-form/bocadillo-form.component';
 import { BocadilloListComponent } from '../../components/bocadillo-list/bocadillo-list.component';
 import { ChatRecomendadorComponent } from '../../components/chat-recomendador/chat-recomendador.component';
+import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
 import { BocadilloService } from '../../services/bocadillo.service';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { PushNotificationService } from '../../services/push-notification.service';
@@ -11,7 +12,7 @@ import { Bocadillo, OrderWindowStatus } from '../../models/bocadillo.model';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, BocadilloFormComponent, BocadilloListComponent, ChatRecomendadorComponent],
+  imports: [CommonModule, BocadilloFormComponent, BocadilloListComponent, ChatRecomendadorComponent, ChatbotComponent],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css',
 })
@@ -89,6 +90,10 @@ export class OrdersComponent implements OnInit {
 
   onBocadilloUpdated(bocadillo: Bocadillo) {
     this.editingBocadillo.set(null);
+    this.refreshList.update((value) => value + 1);
+  }
+
+  onBocadilloAfectadoByChatbot(_evt: { id: string; accion: 'creado' | 'editado' | 'eliminado' }) {
     this.refreshList.update((value) => value + 1);
   }
 

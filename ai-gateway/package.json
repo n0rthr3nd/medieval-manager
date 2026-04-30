@@ -1,0 +1,19 @@
+{
+  "name": "medieval-manager-ai-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Thin auth + rate-limit proxy in front of Ollama. Exposed via Tailscale Funnel.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "spike": "node scripts/spike-tools.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.4.1"
+  }
+}
