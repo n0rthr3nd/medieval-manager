@@ -13,12 +13,11 @@
   position: sticky;
   top: 0;
   z-index: 99;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--neutral-200);
+  background: var(--brand-gradient);
+  border-bottom: none;
   padding: var(--spacing-4);
   margin-bottom: var(--spacing-6);
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.98);
+  box-shadow: var(--shadow-md);
 }
 
 /* Subtle overlay for depth */

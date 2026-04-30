@@ -6,6 +6,7 @@ import { ChatRecomendadorComponent } from '../../components/chat-recomendador/ch
 import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
 import { BocadilloService } from '../../services/bocadillo.service';
 import { SettingsService, Settings } from '../../services/settings.service';
+import { ChatbotService } from '../../services/chatbot.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { Bocadillo, OrderWindowStatus } from '../../models/bocadillo.model';
 
@@ -19,6 +20,7 @@ import { Bocadillo, OrderWindowStatus } from '../../models/bocadillo.model';
 export class OrdersComponent implements OnInit {
   private bocadilloService = inject(BocadilloService);
   private settingsService = inject(SettingsService);
+  private chatbotService = inject(ChatbotService);
   private pushService = inject(PushNotificationService);
 
   orderWindowStatus = signal<OrderWindowStatus | null>(null);
@@ -27,13 +29,20 @@ export class OrdersComponent implements OnInit {
   editingBocadillo = signal<Bocadillo | null>(null);
   isSubscribedToPush = signal<boolean>(false);
   isSubscribing = signal<boolean>(false);
+  chatbotEnabled = signal<boolean>(false);
 
   ngOnInit() {
     this.checkOrderWindow();
     this.loadSettings();
     this.checkPushSubscription();
+    this.loadChatbotStatus();
     // Comprobar el estado cada 5 minutos
     setInterval(() => this.checkOrderWindow(), 5 * 60 * 1000);
+  }
+
+  async loadChatbotStatus() {
+    const status = await this.chatbotService.getStatusOnce();
+    this.chatbotEnabled.set(status?.enabled ?? false);
   }
 
   loadSettings() {
