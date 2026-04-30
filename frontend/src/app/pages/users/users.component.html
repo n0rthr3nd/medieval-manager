@@ -20,6 +20,73 @@
     </div>
   </div>
 
+  <!-- Configuración global del chatbot -->
+  <div class="settings-section">
+    <h4 class="section-title">🤖 Asistente conversacional (chatbot)</h4>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h4>Habilitado globalmente</h4>
+        <p>Kill-switch global. Si está desactivado, ningún usuario verá el chat.</p>
+      </div>
+      <label class="toggle-switch">
+        <input
+          type="checkbox"
+          [(ngModel)]="chatbotGloballyEnabled"
+          (change)="saveChatbotConfig()"
+          [disabled]="chatbotConfigSaving"
+        />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h4>Mensajes/semana por usuario</h4>
+        <p>Cuántos mensajes puede enviar un usuario normal cada semana.</p>
+      </div>
+      <div class="quota-input-group">
+        <input
+          type="number"
+          min="0"
+          max="999"
+          class="form-control quota-input"
+          [(ngModel)]="chatbotMessagesPerWeek"
+        />
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="saveChatbotConfig()"
+          [disabled]="chatbotConfigSaving">
+          Guardar
+        </button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-info">
+        <h4>Mensajes/semana para admins</h4>
+        <p>Cuota separada para administradores (probadores).</p>
+      </div>
+      <div class="quota-input-group">
+        <input
+          type="number"
+          min="0"
+          max="9999"
+          class="form-control quota-input"
+          [(ngModel)]="chatbotMessagesPerWeekAdmin"
+        />
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="saveChatbotConfig()"
+          [disabled]="chatbotConfigSaving">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="loading" *ngIf="isLoading">Cargando usuarios...</div>
 
   <!-- Formulario de creación/edición -->
@@ -80,6 +147,17 @@
         </div>
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="chatbotMode">🤖 Acceso al chatbot</label>
+          <select id="chatbotMode" class="form-control" formControlName="chatbotMode">
+            <option [value]="ChatbotMode.DISABLED">🚫 Desactivado</option>
+            <option [value]="ChatbotMode.BETA">🧪 Beta</option>
+            <option [value]="ChatbotMode.ENABLED">✅ Activo</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Mensajes -->
       <div class="alert alert-danger" *ngIf="errorMessage">
         {{ errorMessage }}
@@ -116,6 +194,7 @@
             <th>Usuario</th>
             <th>Nombre</th>
             <th>Rol</th>
+            <th>🤖 Chatbot</th>
             <th>Fecha Creación</th>
             <th>Acciones</th>
           </tr>
@@ -128,6 +207,34 @@
               <span class="badge" [class.badge-admin]="user.role === UserRole.ADMIN">
                 {{ getRoleLabel(user.role) }}
               </span>
+            </td>
+            <td>
+              <div class="chatbot-mode-buttons">
+                <button
+                  type="button"
+                  class="btn-chip"
+                  [class.active]="(user.chatbotMode || 'disabled') === ChatbotMode.DISABLED"
+                  (click)="setUserChatbotMode(user, ChatbotMode.DISABLED)"
+                  title="Desactivado">
+                  🚫
+                </button>
+                <button
+                  type="button"
+                  class="btn-chip"
+                  [class.active-beta]="user.chatbotMode === ChatbotMode.BETA"
+                  (click)="setUserChatbotMode(user, ChatbotMode.BETA)"
+                  title="Beta">
+                  🧪
+                </button>
+                <button
+                  type="button"
+                  class="btn-chip"
+                  [class.active-on]="user.chatbotMode === ChatbotMode.ENABLED"
+                  (click)="setUserChatbotMode(user, ChatbotMode.ENABLED)"
+                  title="Activo">
+                  ✅
+                </button>
+              </div>
             </td>
             <td>{{ user.createdAt | date: 'dd/MM/yyyy' }}</td>
             <td>

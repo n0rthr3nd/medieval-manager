@@ -84,3 +84,45 @@ export const updateOrdersStatus = async (req: AuthRequest, res: Response): Promi
     });
   }
 };
+
+/**
+ * Actualiza la configuración global del chatbot (kill-switch + cuotas) - Solo ADMIN
+ */
+export const updateChatbotConfig = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const {
+      chatbotGloballyEnabled,
+      chatbotMessagesPerWeek,
+      chatbotMessagesPerWeekAdmin,
+    } = req.body;
+
+    let config = await SystemConfig.findOne();
+    if (!config) {
+      config = new SystemConfig();
+    }
+
+    if (typeof chatbotGloballyEnabled === 'boolean') {
+      config.chatbotGloballyEnabled = chatbotGloballyEnabled;
+    }
+    if (typeof chatbotMessagesPerWeek === 'number' && chatbotMessagesPerWeek >= 0) {
+      config.chatbotMessagesPerWeek = chatbotMessagesPerWeek;
+    }
+    if (typeof chatbotMessagesPerWeekAdmin === 'number' && chatbotMessagesPerWeekAdmin >= 0) {
+      config.chatbotMessagesPerWeekAdmin = chatbotMessagesPerWeekAdmin;
+    }
+
+    await config.save();
+
+    res.json({
+      success: true,
+      data: config,
+      message: 'Configuración del chatbot actualizada',
+    });
+  } catch (error) {
+    console.error('Error al actualizar configuración del chatbot:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al actualizar configuración del chatbot',
+    });
+  }
+};

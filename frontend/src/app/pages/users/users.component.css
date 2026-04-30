@@ -318,3 +318,64 @@ h2 {
     padding: 0.5rem;
   }
 }
+
+/* === Chatbot admin controls === */
+.section-title {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1rem;
+  color: #4a3424;
+}
+
+.quota-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.quota-input {
+  width: 80px;
+  text-align: center;
+}
+
+.chatbot-mode-buttons {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.btn-chip {
+  border: 1px solid #d4b896;
+  background: #fdf6e3;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  opacity: 0.55;
+}
+
+.btn-chip:hover {
+  transform: scale(1.06);
+  opacity: 0.9;
+}
+
+.btn-chip.active {
+  background: #ffcdd2;
+  border-color: #b71c1c;
+  opacity: 1;
+}
+
+.btn-chip.active-beta {
+  background: #fff3cd;
+  border-color: #ff9800;
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.25);
+  opacity: 1;
+}
+
+.btn-chip.active-on {
+  background: #c8e6c9;
+  border-color: #1b5e20;
+  opacity: 1;
+}
