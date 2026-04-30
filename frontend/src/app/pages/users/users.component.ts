@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { SettingsService } from '../../services/settings.service';
-import { User, UserRole } from '../../models/user.model';
+import { SystemConfigService } from '../../services/system-config.service';
+import { User, UserRole, ChatbotMode } from '../../models/user.model';
 
 @Component({
   selector: 'app-users',
@@ -16,6 +17,7 @@ export class UsersComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private settingsService = inject(SettingsService);
+  private systemConfigService = inject(SystemConfigService);
 
   form!: FormGroup;
   users: User[] = [];
@@ -26,12 +28,20 @@ export class UsersComponent implements OnInit {
   editingUserId: string | null = null;
   publicRegistrationEnabled = false;
 
+  // Configuración global del chatbot
+  chatbotGloballyEnabled = true;
+  chatbotMessagesPerWeek = 5;
+  chatbotMessagesPerWeekAdmin = 100;
+  chatbotConfigSaving = false;
+
   readonly UserRole = UserRole;
+  readonly ChatbotMode = ChatbotMode;
 
   ngOnInit() {
     this.initForm();
     this.loadUsers();
     this.loadSettings();
+    this.loadChatbotConfig();
   }
 
   initForm() {
@@ -40,7 +50,69 @@ export class UsersComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       nombre: ['', Validators.required],
       role: [UserRole.USER, Validators.required],
+      chatbotMode: [ChatbotMode.DISABLED, Validators.required],
     });
+  }
+
+  loadChatbotConfig() {
+    this.systemConfigService.getSystemConfig().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.chatbotGloballyEnabled = response.data.chatbotGloballyEnabled ?? true;
+          this.chatbotMessagesPerWeek = response.data.chatbotMessagesPerWeek ?? 5;
+          this.chatbotMessagesPerWeekAdmin = response.data.chatbotMessagesPerWeekAdmin ?? 100;
+        }
+      },
+      error: (error) => {
+        console.error('Error cargando configuración del chatbot:', error);
+      },
+    });
+  }
+
+  saveChatbotConfig() {
+    this.chatbotConfigSaving = true;
+    this.systemConfigService
+      .updateChatbotConfig({
+        chatbotGloballyEnabled: this.chatbotGloballyEnabled,
+        chatbotMessagesPerWeek: this.chatbotMessagesPerWeek,
+        chatbotMessagesPerWeekAdmin: this.chatbotMessagesPerWeekAdmin,
+      })
+      .subscribe({
+        next: () => {
+          this.successMessage = 'Configuración del chatbot guardada';
+          this.chatbotConfigSaving = false;
+          setTimeout(() => (this.successMessage = ''), 3000);
+        },
+        error: (error) => {
+          this.errorMessage = error.error?.error || 'Error al guardar la configuración del chatbot';
+          this.chatbotConfigSaving = false;
+        },
+      });
+  }
+
+  setUserChatbotMode(user: User, mode: ChatbotMode) {
+    if (user.chatbotMode === mode) return;
+    const previous = user.chatbotMode;
+    user.chatbotMode = mode;
+    this.authService.updateUser(user.id, { chatbotMode: mode } as any).subscribe({
+      next: () => {
+        this.successMessage = `Chatbot de "${user.username}": ${this.getChatbotModeLabel(mode)}`;
+        setTimeout(() => (this.successMessage = ''), 3000);
+      },
+      error: (error) => {
+        this.errorMessage = error.error?.error || 'Error al actualizar el modo del chatbot';
+        user.chatbotMode = previous; // revertir UI si falla
+      },
+    });
+  }
+
+  getChatbotModeLabel(mode?: ChatbotMode): string {
+    switch (mode) {
+      case ChatbotMode.ENABLED: return 'Activo';
+      case ChatbotMode.BETA: return 'Beta';
+      case ChatbotMode.DISABLED:
+      default: return 'Desactivado';
+    }
   }
 
   loadSettings() {
@@ -89,6 +161,7 @@ export class UsersComponent implements OnInit {
         username: this.form.value.username,
         nombre: this.form.value.nombre,
         role: this.form.value.role,
+        chatbotMode: this.form.value.chatbotMode,
       };
 
       // Solo incluir password si se ha cambiado
@@ -116,7 +189,7 @@ export class UsersComponent implements OnInit {
         next: (response) => {
           if (response.success) {
             this.successMessage = 'Usuario creado correctamente';
-            this.form.reset({ role: UserRole.USER });
+            this.form.reset({ role: UserRole.USER, chatbotMode: ChatbotMode.DISABLED });
             this.loadUsers();
           }
           this.isSubmitting = false;
@@ -135,7 +208,8 @@ export class UsersComponent implements OnInit {
       username: user.username,
       nombre: user.nombre,
       role: user.role,
-      password: '', // Dejar vacío para no cambiar
+      chatbotMode: user.chatbotMode ?? ChatbotMode.DISABLED,
+      password: '',
     });
 
     // Hacer que el password sea opcional en modo edición
@@ -148,7 +222,7 @@ export class UsersComponent implements OnInit {
 
   cancelEdit() {
     this.editingUserId = null;
-    this.form.reset({ role: UserRole.USER });
+    this.form.reset({ role: UserRole.USER, chatbotMode: ChatbotMode.DISABLED });
 
     // Restaurar validación de password
     this.form.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
