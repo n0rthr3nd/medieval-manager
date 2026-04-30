@@ -52,3 +52,4 @@ Thumbs.db
 # Build outputs
 dist/
 build/
+ai-gateway/.claude/settings.local.json
