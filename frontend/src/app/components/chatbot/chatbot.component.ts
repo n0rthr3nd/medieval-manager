@@ -50,6 +50,11 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   mostrarAnimacion = computed(() => !this.animacionVista);
 
   enabled = computed(() => !!this.status()?.enabled);
+  isBeta = computed(() => !!this.status()?.isBeta);
+  remaining = computed(() => this.status()?.remaining ?? 0);
+  weeklyLimit = computed(() => this.status()?.weeklyLimit ?? 0);
+  quotaTexto = computed(() => `${this.remaining()}/${this.weeklyLimit()} mensajes`);
+  sinCuota = computed(() => this.remaining() <= 0);
 
   private currentSubscription?: Subscription;
   private currentAbort?: () => void;
