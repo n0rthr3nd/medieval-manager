@@ -8,7 +8,10 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
-    "create-admin": "node dist/scripts/createAdmin.js"
+    "create-admin": "node dist/scripts/createAdmin.js",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --runInBand --coverage"
   },
   "keywords": [
     "bocadillos",
@@ -36,6 +39,12 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^7.2.0",
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.1.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.9",
     "tsx": "^4.7.0"
   }
 }

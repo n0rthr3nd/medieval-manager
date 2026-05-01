@@ -4,8 +4,10 @@
       type="button"
       class="fab-button"
       (click)="abrir()"
-      [attr.aria-label]="'Abrir chatbot'">
-      🤖
+      (mouseenter)="marcarAnimacionComoVista()"
+      [attr.aria-label]="'Abrir asistente AI'"
+      [class.nuevo-icono]="mostrarAnimacion()">
+      AI
       @if (isBeta()) { <span class="fab-beta">BETA</span> }
     </button>
   </div>

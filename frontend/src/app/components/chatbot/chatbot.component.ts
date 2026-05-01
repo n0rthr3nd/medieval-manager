@@ -46,13 +46,10 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   inputValue = signal('');
   enviando = signal(false);
   errorMessage = signal('');
+  animacionVista = localStorage.getItem('chatbotAnimacionVista') === 'true';
+  mostrarAnimacion = computed(() => !this.animacionVista);
 
   enabled = computed(() => !!this.status()?.enabled);
-  isBeta = computed(() => !!this.status()?.isBeta);
-  remaining = computed(() => this.status()?.remaining ?? 0);
-  weeklyLimit = computed(() => this.status()?.weeklyLimit ?? 0);
-  quotaTexto = computed(() => `${this.remaining()}/${this.weeklyLimit()} mensajes`);
-  sinCuota = computed(() => this.remaining() <= 0);
 
   private currentSubscription?: Subscription;
   private currentAbort?: () => void;
@@ -94,11 +91,13 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   abrir() {
     this.abierto.set(true);
+    this.marcarAnimacionComoVista();
     setTimeout(() => this.scrollToBottom(), 50);
   }
 
   cerrar() {
     this.abierto.set(false);
+    this.marcarAnimacionComoVista();
   }
 
   cancelarStream() {
@@ -109,6 +108,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   }
 
   enviar() {
+    this.marcarAnimacionComoVista();
     const texto = this.inputValue().trim();
     if (!texto || this.enviando() || this.sinCuota()) return;
 
@@ -264,5 +264,10 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   accionLabel(accion: 'creado' | 'editado' | 'eliminado'): string {
     return { creado: 'Pedido creado', editado: 'Pedido editado', eliminado: 'Pedido eliminado' }[accion];
+  }
+
+  private marcarAnimacionComoVista() {
+    localStorage.setItem('chatbotAnimacionVista', 'true');
+    this.animacionVista = true;
   }
 }
