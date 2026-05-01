@@ -2,6 +2,19 @@
    HEADER - Unified color palette
    ======================================== */
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: white;
+  border-bottom: 1px solid #E9ECEF;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 68px;
+}
+
 /* ========================================
    HEADER LOGO
    ======================================== */
@@ -9,14 +22,23 @@
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
 }
 
 .header-logo .logo {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-logo:hover .logo {
+  transform: scale(1.05);
 }
 
 .header-logo h1 {
@@ -24,9 +46,16 @@
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.2;
   color: #0A0D14;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Header title variant for mobile */
+.header-logo h1.compact {
+  font-size: 1.3rem;
 }
 
 /* User Info Section */
@@ -42,7 +71,7 @@
   align-items: center;
   gap: 8px;
   background: #F1F3F5;
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -53,24 +82,26 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: transparent;
+  background: #F8F9FA;
   color: #495057;
-  border: none;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.875rem;
+  border: 1px solid #E9ECEF;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-logout:hover {
-  background: #F1F3F5;
+  background: #E9ECEF;
   color: #0A0D14;
+  border-color: #DEE2E6;
 }
 
 .btn-logout:active {
   transform: scale(0.95);
+  background: #DEE2E6;
 }
 
 /* ========================================
@@ -146,30 +177,38 @@
 }
 
 /* ========================================
-   FOOTER
+   CONTAINER
    ======================================== */
 
-.footer {
-  text-align: center;
-  padding: 48px 24px;
-  padding-bottom: calc(48px + 80px + env(safe-area-inset-bottom));
-  color: #6C757D;
-  font-size: 0.75rem;
-  margin-top: 48px;
-}
-
-.footer p {
-  margin: 0;
-  font-weight: 400;
+.container {
+  min-height: 100vh;
+  background: #F8F9FA;
 }
 
 /* ========================================
    CONTENT WRAPPER
    ======================================== */
 
-.container {
+.content-wrapper {
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
-  min-height: 100vh;
+  min-height: calc(100vh - 200px);
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.footer {
+  text-align: center;
+  padding: 32px 24px;
+  padding-bottom: calc(32px + 80px + env(safe-area-inset-bottom));
+  color: #6C757D;
+  font-size: 0.75rem;
+}
+
+.footer p {
+  margin: 0;
+  font-weight: 400;
 }
 
 /* ========================================
@@ -179,14 +218,16 @@
 @media (max-width: 768px) {
   .header {
     padding: 12px 16px;
+    height: 60px;
   }
 
-  .header h1 {
-    font-size: 1.25rem;
+  .header-logo .logo {
+    width: 38px;
+    height: 38px;
   }
 
-  .user-info {
-    gap: 8px;
+  .header-logo h1 {
+    font-size: 1.3rem;
   }
 
   .user-badge {
@@ -196,7 +237,7 @@
 
   .btn-logout {
     font-size: 11px;
-    padding: 4px 8px;
+    padding: 6px 12px;
   }
 
   .nav-tab .icon {
@@ -206,6 +247,10 @@
   .nav-tab .label {
     font-size: 10px;
   }
+
+  .content-wrapper {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (min-width: 769px) {
@@ -214,5 +259,11 @@
     left: 50%;
     transform: translateX(-50%);
     border-radius: 28px 28px 0 0;
+    margin-top: 16px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
   }
 }
