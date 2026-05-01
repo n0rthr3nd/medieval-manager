@@ -20,7 +20,7 @@ export async function checkOrderWindow(req: Request, res: Response, next: NextFu
       const nextFriday = getNextFriday();
       return res.status(403).json({
         error: 'Fuera de la ventana de pedidos',
-        message: 'Los pedidos solo se pueden realizar de viernes a jueves hasta las 17:00',
+        message: 'Los pedidos se pueden realizar desde Sábado hasta Viernes a las 23:59 (para la próxima semana)',
         nextAvailable: nextFriday.toISOString(),
       });
     }
@@ -33,7 +33,7 @@ export async function checkOrderWindow(req: Request, res: Response, next: NextFu
       const nextFriday = getNextFriday();
       return res.status(403).json({
         error: 'Fuera de la ventana de pedidos',
-        message: 'Los pedidos solo se pueden realizar de viernes a jueves hasta las 17:00',
+        message: 'Los pedidos se pueden realizar desde Sábado hasta Viernes a las 23:59 (para la próxima semana)',
         nextAvailable: nextFriday.toISOString(),
       });
     }

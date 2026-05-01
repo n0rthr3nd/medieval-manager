@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Medieval Manager** is a full-stack app for managing weekly office sandwich (bocadillo) orders. Users place orders within a weekly window (Friday 00:00 – Thursday 17:00). It includes an admin dashboard, AI-powered recommendations, a streaming chatbot with tool-calling, and push notifications.
+**Medieval Manager** is a full-stack app for managing weekly office sandwich (bocadillo) orders. Users place orders from **Saturday 00:00 until Friday 23:59** for the upcoming Friday. It includes an admin dashboard, AI-powered recommendations, a streaming chatbot with tool-calling, and push notifications.
 
 ## Commands
 
@@ -51,7 +51,7 @@ Three independent packages — `frontend/`, `backend/`, `ai-gateway/` — each w
 Express + TypeScript + MongoDB (Mongoose). Standard layered structure: `routes/` → `controllers/` → `services/` → `models/`. Key middleware:
 
 - `middleware/auth.ts` — `authenticateToken` (JWT) and `requireAdmin`
-- `middleware/orderWindow.ts` — blocks order mutations outside Friday–Thursday 17:00
+- `middleware/orderWindow.ts` — blocks order mutations outside Saturday–Friday 23:59
 - `middleware/chatbotGate.ts` — feature flag for the chatbot endpoint
 
 Validation uses **Zod** in `validators/`. On startup (`index.ts`), the backend auto-creates the admin user and seeds ingredients if the DB is empty.
@@ -109,7 +109,7 @@ RATE_LIMIT_MAX=60
 
 ## Key Constraints
 
-- **Order window** is enforced server-side in `orderWindow.ts` (Friday 00:00 → Thursday 17:00, Spanish timezone). It cannot be bypassed client-side.
+- **Order window** is enforced server-side in `orderWindow.ts` (Saturday 00:00 → Friday 23:59, Spanish timezone). It cannot be bypassed client-side.
 - **CORS** currently allows all origins in development (`cors()` with no config). Restrict via `FRONTEND_URL` in production.
 - The chatbot uses the `chatbotMode` field on the `User` model to determine which Ollama model/behavior to use.
 - Ingredient bread rules (integral/seeds only for normal size) are validated in `bocadilloController.ts`, not just the frontend form.
