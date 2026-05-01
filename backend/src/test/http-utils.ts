@@ -65,13 +65,13 @@ export const authenticateRequest = (
     case 'GET':
       return request(app).get(path).set(headers);
     case 'POST':
-      return request(app).post(path).set(headers).send(body);
+      return request(app).post(path).set(headers).send(body as any);
     case 'PUT':
-      return request(app).put(path).set(headers).send(body);
+      return request(app).put(path).set(headers).send(body as any);
     case 'DELETE':
       return request(app).delete(path).set(headers);
     case 'PATCH':
-      return request(app).patch(path).set(headers).send(body);
+      return request(app).patch(path).set(headers).send(body as any);
     default:
       throw new Error(`Method ${method} not supported`);
   }

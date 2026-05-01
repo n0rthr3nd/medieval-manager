@@ -271,7 +271,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     return { creado: 'Pedido creado', editado: 'Pedido editado', eliminado: 'Pedido eliminado' }[accion];
   }
 
-  private marcarAnimacionComoVista() {
+  marcarAnimacionComoVista() {
     localStorage.setItem('chatbotAnimacionVista', 'true');
     this.animacionVista = true;
   }
