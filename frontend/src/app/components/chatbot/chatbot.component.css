@@ -9,7 +9,7 @@
 /* FAB (botón flotante) */
 .chatbot-fab {
   position: fixed;
-  bottom: 24px;
+  bottom: 34px;
   right: 24px;
   z-index: 1100;
 }
@@ -41,10 +41,12 @@
     box-shadow: 0 8px 20px 0 rgba(0, 117, 255, 0.2);
     transform: scale(1);
   }
+
   50% {
     box-shadow: 0 0 0 8px rgba(0, 117, 255, 0.15);
     transform: scale(1.05);
   }
+
   100% {
     box-shadow: 0 8px 20px 0 rgba(0, 117, 255, 0.2);
     transform: scale(1);
@@ -246,7 +248,9 @@
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 .propuesta {
