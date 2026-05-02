@@ -1,5 +1,5 @@
 <div class="card">
-  <h2>Pedidos de esta semana</h2>
+  <h2>Pedidos para el próximo viernes</h2>
 
   <div class="loading" *ngIf="isLoading">
     Cargando pedidos...
@@ -10,7 +10,7 @@
   </div>
 
   <div class="empty-state" *ngIf="!isLoading && bocadillos.length === 0 && !errorMessage">
-    <p>No hay pedidos esta semana</p>
+    <p>No hay pedidos para el próximo viernes</p>
     <p>¡Sé el primero en pedir un bocadillo!</p>
   </div>
 

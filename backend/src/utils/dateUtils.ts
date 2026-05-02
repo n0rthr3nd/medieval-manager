@@ -83,3 +83,12 @@ export function getCurrentMonday(date: Date = new Date()): Date {
   result.setHours(0, 0, 0, 0);
   return result;
 }
+
+/**
+ * Obtiene la semana objetivo para pedidos
+ * Dado que los pedidos se hacen desde Sábado hasta Viernes para el siguiente viernes,
+ * necesitamos determinar a qué semana pertenece el "objetivo" (el próximo viernes)
+ */
+export function getTargetWeek(date: Date = new Date()): { week: number; year: number } {
+  return getWeekNumber(getNextFriday(date));
+}

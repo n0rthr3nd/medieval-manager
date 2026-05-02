@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Bocadillo from '../models/Bocadillo';
 import Settings from '../models/Settings';
 import { createBocadilloSchema } from '../validators/bocadilloValidator';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 import { ZodError } from 'zod';
 import { AuthRequest } from '../middleware/auth';
 import { UserRole } from '../models/User';
@@ -31,8 +31,8 @@ export const createBocadillo = async (req: Request, res: Response) => {
     // Validar datos de entrada
     const validatedData = createBocadilloSchema.parse(req.body);
 
-    // Obtener semana actual
-    const { week, year } = getWeekNumber(new Date());
+    // Obtener semana objetivo (la del próximo viernes)
+    const { week, year } = getTargetWeek(new Date());
 
     // Crear bocadillo con el userId y nombre del usuario autenticado
     const bocadillo = new Bocadillo({
@@ -68,7 +68,8 @@ export const createBocadillo = async (req: Request, res: Response) => {
 
 export const getBocadillosSemanaActual = async (req: Request, res: Response) => {
   try {
-    const { week, year } = getWeekNumber(new Date());
+    // Obtener semana objetivo (la del próximo viernes)
+    const { week, year } = getTargetWeek(new Date());
 
     const bocadillos = await Bocadillo.find({
       semana: week,
@@ -93,7 +94,7 @@ export const getBocadillosSemanaActual = async (req: Request, res: Response) => 
 export const updateBocadillo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
     const user = (req as AuthRequest).user;
 
     if (!user) {
@@ -174,7 +175,7 @@ export const updateBocadillo = async (req: Request, res: Response) => {
 export const deleteBocadillo = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
     const user = (req as AuthRequest).user;
 
     if (!user) {
