@@ -237,7 +237,9 @@ const crearMiPedido: ToolHandler = async (ctx, args) => {
     ok: true,
     data: {
       id: String(bocadillo._id),
-      mensaje: 'Pedido creado correctamente.',
+      mensaje: `Pedido creado correctamente para la semana ${week} de ${year}.`,
+      semana: week,
+      ano: year,
     },
     propuestaPedido: {
       tamano: parsed.data.tamano,
@@ -372,7 +374,7 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
     type: 'function',
     function: {
       name: 'obtener_mis_pedidos_recientes',
-      description: 'Devuelve los últimos pedidos del usuario autenticado. Útil para "lo de siempre" o para sugerir variaciones.',
+      description: 'Devuelve los últimos pedidos del usuario autenticado (pueden ser de semanas actuales o pasadas). Útil para "lo de siempre" o para sugerir variaciones. Los pedidos incluyen el número de semana y año al que pertenecen.',
       parameters: {
         type: 'object',
         properties: {
@@ -414,7 +416,7 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
     type: 'function',
     function: {
       name: 'crear_mi_pedido',
-      description: 'Crea un pedido de bocadillo para el usuario autenticado. SIEMPRE se crea para el usuario que está hablando contigo, no para otros usuarios. Llama antes a consultar_ventana_pedidos para confirmar que se puede.',
+      description: 'Crea un pedido de bocadillo para el usuario autenticado. El sistema asigna automáticamente la semana correcta (la del próximo viernes). SIEMPRE se crea para el usuario que está hablando contigo, no para otros usuarios. Llama antes a consultar_ventana_pedidos para confirmar que se puede.',
       parameters: {
         type: 'object',
         properties: {
