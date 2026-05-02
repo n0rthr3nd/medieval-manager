@@ -61,6 +61,19 @@ export function getNextMonday(date: Date = new Date()): Date {
 }
 
 /**
+ * Obtiene la fecha del próximo sábado
+ */
+export function getNextSaturday(date: Date = new Date()): Date {
+  const result = new Date(date);
+  const dayOfWeek = result.getDay();
+  // Sábado es día 6
+  const daysUntilSaturday = dayOfWeek === 6 ? 7 : (6 - dayOfWeek + 7) % 7;
+  result.setDate(result.getDate() + (daysUntilSaturday === 0 ? 7 : daysUntilSaturday));
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
+/**
  * Obtiene la fecha del jueves de la semana actual a las 17:00
  */
 export function getThursdayDeadline(date: Date = new Date()): Date {
@@ -69,6 +82,18 @@ export function getThursdayDeadline(date: Date = new Date()): Date {
   const daysUntilThursday = dayOfWeek <= 4 ? 4 - dayOfWeek : 11 - dayOfWeek;
   result.setDate(result.getDate() + daysUntilThursday);
   result.setHours(17, 0, 0, 0);
+  return result;
+}
+
+/**
+ * Obtiene la fecha del viernes a las 23:59 (la fecha límite para pedidos)
+ */
+export function getFridayDeadline(date: Date = new Date()): Date {
+  const result = new Date(date);
+  const dayOfWeek = result.getDay();
+  const daysUntilFriday = dayOfWeek === 5 ? 7 : (5 - dayOfWeek + 7) % 7;
+  result.setDate(result.getDate() + daysUntilFriday);
+  result.setHours(23, 59, 0, 0);
   return result;
 }
 

@@ -22,7 +22,7 @@ import {
   TipoRecomendacion,
   PropuestaPedido,
 } from '../types/aiRecommendation';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 
 /**
  * Configuración del API externo de LangChain + Ollama + RAG + MCP
@@ -998,7 +998,7 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
     recomendacion?: RecomendacionIA,
     intencionDetectada?: IntencionUsuario
   ): Promise<void> {
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
 
     // Buscar conversación activa de la semana actual
     let conversacion = await ConversacionChat.findOne({
@@ -1038,7 +1038,7 @@ Fin de semana: ${contextoUsuario.contextoTemporal?.esFinDeSemana ? 'Sí' : 'No'}
    * Obtiene la conversación activa del usuario
    */
   async obtenerConversacionActiva(userId: string | mongoose.Types.ObjectId) {
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
 
     return await ConversacionChat.findOne({
       userId,

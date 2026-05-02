@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Bocadillo from '../models/Bocadillo';
 import Settings from '../models/Settings';
 import { createBocadilloSchema } from '../validators/bocadilloValidator';
-import { getTargetWeek } from '../utils/dateUtils';
+import { getTargetWeek, getWeekNumber } from '../utils/dateUtils';
 import { ZodError } from 'zod';
 import { AuthRequest } from '../middleware/auth';
 import { UserRole } from '../models/User';
@@ -299,6 +299,73 @@ export const markAsPagado = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Error al actualizar el estado de pago',
+    });
+  }
+};
+
+// Obtener bocadillos de una semana específica (admin)
+export const getBocadillosByWeek = async (req: Request, res: Response) => {
+  try {
+    const semana = req.query.semana ? parseInt(req.query.semana as string) : undefined;
+    const ano = req.query.ano ? parseInt(req.query.ano as string) : undefined;
+
+    if (semana && ano) {
+      if (isNaN(semana) || isNaN(ano) || semana < 1 || semana > 53) {
+        return res.status(400).json({
+          success: false,
+          error: 'Parámetros semana/ano inválidos',
+        });
+      }
+    }
+
+    const target = semana && ano ? { week: semana, year: ano } : getTargetWeek(new Date());
+
+    const bocadillos = await Bocadillo.find({
+      semana: target.week,
+      ano: target.year,
+    }).sort({ fechaCreacion: -1 });
+
+    res.json({
+      success: true,
+      data: bocadillos,
+      semana: target.week,
+      ano: target.year,
+    });
+  } catch (error) {
+    console.error('Error fetching bocadillos by week:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener los bocadillos',
+    });
+  }
+};
+
+// Obtener semanas con pedidos disponibles (admin)
+export const getSemanasDisponibles = async (_req: Request, res: Response) => {
+  try {
+    const semanas = await Bocadillo.aggregate([
+      {
+        $group: {
+          _id: { semana: '$semana', ano: '$ano' },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { '_id.ano': -1, '_id.semana': -1 } },
+      { $limit: 52 },
+    ]);
+
+    const result = semanas.map((s) => ({
+      semana: s._id.semana,
+      ano: s._id.ano,
+      count: s.count,
+    }));
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error fetching semanas disponibles:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener las semanas disponibles',
     });
   }
 };

@@ -2,7 +2,7 @@ import cron from 'node-cron';
 import { sendNotificationToAll } from '../controllers/pushController';
 import Settings from '../models/Settings';
 import Bocadillo from '../models/Bocadillo';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 
 let notificationSent = false;
 let currentWeek = 0;
@@ -19,10 +19,11 @@ export function initNotificationScheduler() {
     const dayOfWeek = now.getDay(); // 0 = Domingo, 4 = Jueves
     const hours = now.getHours();
 
-    // Obtener número de semana actual
+    // Obtener número de semana objetivo (la del próximo viernes)
+    const { week, year } = getTargetWeek(now);
     const weekNumber = getISOWeekNumber(now);
 
-    // Resetear el flag si cambiamos de semana
+    // Resetear el flag si cambiamos de semana objetivo
     if (weekNumber !== currentWeek) {
       notificationSent = false;
       currentWeek = weekNumber;
@@ -41,8 +42,8 @@ export function initNotificationScheduler() {
           return;
         }
 
-        // Obtener usuarios que YA tienen bocadillo para esta semana
-        const { week, year } = getWeekNumber(now);
+        // Obtener usuarios que YA tienen bocadillo para esta semana (la del próximo viernes)
+        const { week, year } = getTargetWeek(now);
         const bocadillos = await Bocadillo.find({ semana: week, ano: year });
         const usersWithOrder = bocadillos
           .map((b) => b.userId?.toString())

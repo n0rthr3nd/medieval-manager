@@ -17,6 +17,8 @@ import User, { UserRole } from './models/User';
 import Ingrediente from './models/Ingrediente';
 import { INGREDIENTES_DISPONIBLES } from './config/menu';
 import { initNotificationScheduler } from './services/notificationScheduler';
+import ConversacionChat from './models/ConversacionChat';
+import { getTargetWeek } from './utils/dateUtils';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -174,6 +176,41 @@ const initializeIngredientes = async () => {
   }
 };
 
+/**
+ * Cierra las conversaciones de chat de la semana anterior.
+ * Al cambiar la ventana de pedidos a Sábado-Viernes, las conversaciones se
+ * asocian a la semana del próximo viernes. Esta función desactiva las
+ * conversaciones anteriores para mantener limpio el historial.
+ */
+const closePreviousWeekConversations = async () => {
+  try {
+    const { week, year } = getTargetWeek(new Date());
+
+    // Buscar conversaciones de la semana anterior
+    // Si estamos en semana 18, buscamos las de semana 17 del mismo año
+    // O si estamos en semana 1 del año nuevo, buscamos la última del año anterior
+    const previousWeek = week === 1 ? 52 : week - 1;
+    const previousYear = week === 1 ? year - 1 : year;
+
+    const result = await ConversacionChat.updateMany(
+      {
+        semana: previousWeek,
+        ano: previousYear,
+        activa: true,
+      },
+      { $set: { activa: false } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log(`✅ Cerradas ${result.modifiedCount} conversaciones de la semana anterior`);
+    } else {
+      console.log('ℹ️  No hay conversaciones anteriores que cerrar');
+    }
+  } catch (error) {
+    console.error('⚠️  Error al cerrar conversaciones anteriores:', error);
+  }
+};
+
 // Iniciar servidor
 const startServer = async () => {
   try {
@@ -184,6 +221,9 @@ const startServer = async () => {
 
     // Inicializar ingredientes automáticamente
     await initializeIngredientes();
+
+    // Cerrar conversaciones de chat de la semana anterior
+    await closePreviousWeekConversations();
 
     // Inicializar scheduler de notificaciones
     initNotificationScheduler();

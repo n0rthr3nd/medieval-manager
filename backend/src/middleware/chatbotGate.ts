@@ -15,7 +15,7 @@ import User, { ChatbotMode, UserRole } from '../models/User';
 import SystemConfig from '../models/SystemConfig';
 import ConversacionChat from '../models/ConversacionChat';
 import { AuthRequest } from './auth';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 
 export interface ChatbotGateContext {
   weeklyLimit: number;
@@ -65,13 +65,13 @@ export async function chatbotGate(
     });
   }
 
-  // 3. Cuota semanal.
+  // 3. Cuota semanal (usando semana objetivo - la del próximo viernes).
   const isAdmin = userDoc.role === UserRole.ADMIN;
   const weeklyLimit = isAdmin
     ? (config?.chatbotMessagesPerWeekAdmin ?? DEFAULT_LIMIT_ADMIN)
     : (config?.chatbotMessagesPerWeek ?? DEFAULT_LIMIT_USER);
 
-  const { week, year } = getWeekNumber(new Date());
+  const { week, year } = getTargetWeek(new Date());
   const conversacion = await ConversacionChat.findOne({
     userId: auth.userId,
     semana: week,
@@ -110,7 +110,8 @@ export async function consumeChatbotQuota(
   userId: string,
   weeklyLimit: number
 ): Promise<{ used: number; remaining: number }> {
-  const { week, year } = getWeekNumber(new Date());
+  // Usar semana objetivo (la del próximo viernes)
+  const { week, year } = getTargetWeek(new Date());
   const updated = await ConversacionChat.findOneAndUpdate(
     { userId, semana: week, ano: year, activa: true },
     { $inc: { mensajesUsuarioCount: 1 } },

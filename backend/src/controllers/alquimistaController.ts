@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import BocadilloAlquimista from '../models/BocadilloAlquimista';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 import { z, ZodError } from 'zod';
 import { TamanoBocadillo, TipoPan } from '../models/Bocadillo';
 
@@ -13,7 +13,7 @@ const alquimistaSchema = z.object({
 // Obtener el bocadillo Alquimista de la semana actual
 export const getAlquimistaActual = async (req: Request, res: Response) => {
   try {
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
 
     const alquimista = await BocadilloAlquimista.findOne({
       semana: week,
@@ -39,7 +39,7 @@ export const getAlquimistaActual = async (req: Request, res: Response) => {
 export const upsertAlquimista = async (req: Request, res: Response) => {
   try {
     const validatedData = alquimistaSchema.parse(req.body);
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
 
     // Buscar si ya existe un Alquimista para esta semana
     let alquimista = await BocadilloAlquimista.findOne({
@@ -88,7 +88,7 @@ export const upsertAlquimista = async (req: Request, res: Response) => {
 // Eliminar el bocadillo Alquimista de la semana (solo admin)
 export const deleteAlquimista = async (req: Request, res: Response) => {
   try {
-    const { week, year } = getWeekNumber(new Date());
+    const { week, year } = getTargetWeek(new Date());
 
     const result = await BocadilloAlquimista.deleteOne({
       semana: week,

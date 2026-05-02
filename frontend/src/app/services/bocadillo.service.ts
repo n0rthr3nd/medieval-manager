@@ -66,4 +66,18 @@ export class BocadilloService {
   getOrderWindowStatus(): Observable<ApiResponse<OrderWindowStatus>> {
     return this.http.get<ApiResponse<OrderWindowStatus>>(`${this.apiUrl}/menu/order-window`);
   }
+
+  // Admin: Obtener bocadillos de una semana específica
+  getBocadillosByWeek(semana: number, ano: number): Observable<ApiResponse<Bocadillo[]>> {
+    return this.http.get<ApiResponse<Bocadillo[]>>(
+      `${this.apiUrl}/bocadillos/admin/historico?semana=${semana}&ano=${ano}`
+    );
+  }
+
+  // Admin: Obtener semanas con pedidos
+  getSemanasDisponibles(): Observable<ApiResponse<{ semana: number; ano: number; count: number }[]>> {
+    return this.http.get<ApiResponse<{ semana: number; ano: number; count: number }[]>>(
+      `${this.apiUrl}/bocadillos/admin/semanas`
+    );
+  }
 }

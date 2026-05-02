@@ -14,7 +14,7 @@ import { AuthRequest } from '../middleware/auth';
 import ConversacionChat, { IMensajeChat } from '../models/ConversacionChat';
 import SystemConfig from '../models/SystemConfig';
 import User, { ChatbotMode, UserRole } from '../models/User';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 import { streamChat } from '../services/chatbot/chatbotService';
 import {
   ChatMessage,
@@ -76,8 +76,8 @@ export const postChatMensaje = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'mensaje_no_permitido', message: unsafeReason });
   }
 
-  // Cargar / crear conversación de la semana actual.
-  const { week, year } = getWeekNumber(new Date());
+  // Cargar / crear conversación de la semana objetivo (la del próximo viernes).
+  const { week, year } = getTargetWeek(new Date());
   let conversacion = await ConversacionChat.findOne({
     userId: user.userId,
     activa: true,
@@ -232,7 +232,8 @@ export const getChatConversacionActual = async (req: Request, res: Response) => 
   const user = (req as AuthRequest).user;
   if (!user) return res.status(401).json({ error: 'No autenticado' });
 
-  const { week, year } = getWeekNumber(new Date());
+  // Obtener semana objetivo (la del próximo viernes)
+  const { week, year } = getTargetWeek(new Date());
   const conversacion = await ConversacionChat.findOne({
     userId: user.userId,
     activa: true,
@@ -277,7 +278,7 @@ export const getChatStatus = async (req: Request, res: Response) => {
     ? (config?.chatbotMessagesPerWeekAdmin ?? 100)
     : (config?.chatbotMessagesPerWeek ?? 5);
 
-  const { week, year } = getWeekNumber(new Date());
+  const { week, year } = getTargetWeek(new Date());
   const conv = await ConversacionChat.findOne({
     userId: auth.userId,
     semana: week,

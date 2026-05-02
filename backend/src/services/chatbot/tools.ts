@@ -16,7 +16,7 @@ import Ingrediente from '../../models/Ingrediente';
 import SystemConfig from '../../models/SystemConfig';
 import Settings from '../../models/Settings';
 import { BOCATAS_PREDEFINIDOS } from '../../config/menu';
-import { getWeekNumber, isWithinOrderWindow, getNextFriday } from '../../utils/dateUtils';
+import { getTargetWeek, isWithinOrderWindow, getNextFriday } from '../../utils/dateUtils';
 import { createBocadilloSchema } from '../../validators/bocadilloValidator';
 import {
   ToolDefinition,
@@ -219,7 +219,7 @@ const crearMiPedido: ToolHandler = async (ctx, args) => {
     return { ok: false, error: `Ingredientes no válidos: ${ingValid.faltan.join(', ')}` };
   }
 
-  const { week, year } = getWeekNumber(new Date());
+  const { week, year } = getTargetWeek(new Date());
 
   const bocadillo = new Bocadillo({
     nombre: ctx.nombre,
@@ -269,10 +269,10 @@ const editarMiPedido: ToolHandler = async (ctx, args) => {
     return { ok: false, error: 'No tienes permiso para editar este pedido' };
   }
 
-  // Solo semana actual.
-  const { week, year } = getWeekNumber(new Date());
+  // Solo semana objetivo (la del próximo viernes).
+  const { week, year } = getTargetWeek(new Date());
   if (bocadillo.semana !== week || bocadillo.ano !== year) {
-    return { ok: false, error: 'Solo se pueden editar pedidos de la semana actual' };
+    return { ok: false, error: 'Solo se pueden editar pedidos de la semana objetivo (próximo viernes)' };
   }
 
   const valid = createBocadilloSchema.safeParse({
@@ -325,9 +325,9 @@ const eliminarMiPedido: ToolHandler = async (ctx, args) => {
     return { ok: false, error: 'No tienes permiso para eliminar este pedido' };
   }
 
-  const { week, year } = getWeekNumber(new Date());
+  const { week, year } = getTargetWeek(new Date());
   if (bocadillo.semana !== week || bocadillo.ano !== year) {
-    return { ok: false, error: 'Solo se pueden eliminar pedidos de la semana actual' };
+    return { ok: false, error: 'Solo se pueden eliminar pedidos de la semana objetivo (próximo viernes)' };
   }
 
   await Bocadillo.deleteOne({ _id: bocadillo._id });

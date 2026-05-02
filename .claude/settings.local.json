@@ -14,7 +14,9 @@
       "Bash(npx jest *)",
       "Bash(echo \"Exit code: $?\")",
       "Bash(cat)",
-      "Bash(node /tmp/test-mock.js)"
+      "Bash(node /tmp/test-mock.js)",
+      "Bash(npx tsc *)",
+      "Bash(npx ng *)"
     ]
   }
 }

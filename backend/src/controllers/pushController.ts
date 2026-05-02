@@ -230,7 +230,7 @@ export const sendManualNotification = async (req: Request, res: Response) => {
     // Importar dependencias necesarias para filtrado
     const Settings = (await import('../models/Settings')).default;
     const Bocadillo = (await import('../models/Bocadillo')).default;
-    const { getWeekNumber } = await import('../utils/dateUtils');
+    const { getTargetWeek } = await import('../utils/dateUtils');
 
     // Verificar si los pedidos están cerrados
     const settings = await Settings.findOne();
@@ -241,8 +241,8 @@ export const sendManualNotification = async (req: Request, res: Response) => {
       });
     }
 
-    // Obtener usuarios que YA tienen bocadillo para esta semana
-    const { week, year } = getWeekNumber(new Date());
+    // Obtener usuarios que YA tienen bocadillo para esta semana (la del próximo viernes)
+    const { week, year } = getTargetWeek(new Date());
     const bocadillos = await Bocadillo.find({ semana: week, ano: year });
     const usersWithOrder = bocadillos
       .map((b) => b.userId?.toString())

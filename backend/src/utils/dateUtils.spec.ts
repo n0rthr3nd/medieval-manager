@@ -1,5 +1,6 @@
 import {
   getWeekNumber,
+  getTargetWeek,
   isWithinOrderWindow,
   getNextFriday,
   getNextMonday,
@@ -130,6 +131,31 @@ describe('dateUtils', () => {
       const monday = getCurrentMonday(date);
       expect(monday.getDay()).toBe(1); // Monday
       expect(monday.getDate()).toBe(8); // Jan 8, 2024
+    });
+  });
+
+  describe('getTargetWeek', () => {
+    it('should return the week number of the next Friday', () => {
+      // Friday = 5, Saturday = 6
+      const date = new Date('2024-01-13'); // Saturday - should target next Friday (Jan 19)
+      const { week, year } = getTargetWeek(date);
+      expect(week).toBe(3); // Jan 19 is in week 3 of 2024
+      expect(year).toBe(2024);
+    });
+
+    it('should return the same week if called on Friday', () => {
+      const date = new Date('2024-01-12'); // Friday
+      const { week, year } = getTargetWeek(date);
+      // Next Friday is Jan 19, which is week 3
+      expect(week).toBe(3);
+    });
+
+    it('should return correct year when crossing year boundary', () => {
+      // If today is late December and next Friday is in January of next year
+      const date = new Date('2023-12-30'); // Saturday
+      const { week, year } = getTargetWeek(date);
+      // Next Friday is Jan 5, 2024 which is week 1 of 2024
+      expect(year).toBe(2024);
     });
   });
 });

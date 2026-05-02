@@ -12,7 +12,7 @@ import {
   feedbackRecomendacionSchema,
 } from '../validators/aiRecommendationValidator';
 import Bocadillo from '../models/Bocadillo';
-import { getWeekNumber } from '../utils/dateUtils';
+import { getTargetWeek } from '../utils/dateUtils';
 import Settings from '../models/Settings';
 import { UserRole } from '../models/User';
 
@@ -115,8 +115,8 @@ export const aceptarRecomendacion = async (req: Request, res: Response) => {
     // Validar datos de entrada
     const validatedData = aceptarRecomendacionSchema.parse(req.body);
 
-    // Obtener semana actual
-    const { week, year } = getWeekNumber(new Date());
+    // Obtener semana objetivo (la del próximo viernes)
+    const { week, year } = getTargetWeek(new Date());
 
     // Crear bocadillo basado en la recomendación aceptada
     const bocadillo = new Bocadillo({

@@ -39,9 +39,17 @@ export interface OrderWindowStatus {
   manuallyClosed?: boolean;
 }
 
+export interface SemanaDisponible {
+  semana: number;
+  ano: number;
+  count: number;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
   message?: string;
+  semana?: number;
+  ano?: number;
 }

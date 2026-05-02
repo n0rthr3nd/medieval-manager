@@ -1,6 +1,23 @@
 <div class="card">
   <h2>💰 Estado de Pagos</h2>
-  <p class="subtitle">Seguimiento de pagos de la semana actual</p>
+  <p class="subtitle">Seguimiento de pagos</p>
+
+  <!-- Week selector (admin only) -->
+  <div class="week-selector" *ngIf="isAdmin && semanas.length > 0">
+    <label for="weekSelect">Semana:</label>
+    <select
+      id="weekSelect"
+      [(ngModel)]="selectedWeekKey"
+      (change)="onWeekChange()"
+    >
+      <option
+        *ngFor="let s of semanas"
+        [value]="s.semana + '|' + s.ano"
+      >
+        {{ formatWeekLabel(s) }}
+      </option>
+    </select>
+  </div>
 
   <div class="loading" *ngIf="isLoading">Cargando pagos...</div>
 
@@ -40,13 +57,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let payment of payments" [class.paid]="payment.pagado" [class.unpaid]="!payment.pagado">
+          <tr
+            *ngFor="let payment of payments"
+            [class.paid]="payment.pagado"
+            [class.unpaid]="!payment.pagado"
+          >
             <td class="name-cell">{{ payment.nombre }}</td>
             <td class="bocadillo-cell">{{ payment.bocadillo }}</td>
             <td class="price-cell">{{ formatCurrency(payment.precio || 0) }}</td>
             <td class="status-cell">
-              <span class="status-badge" [class.badge-paid]="payment.pagado" [class.badge-unpaid]="!payment.pagado">
-                {{ payment.pagado ? '✓ Pagado' : '✗ Pendiente' }}
+              <span
+                class="status-badge"
+                [class.badge-paid]="payment.pagado"
+                [class.badge-unpaid]="!payment.pagado"
+              >
+                {{ payment.pagado ? "✓ Pagado" : "✗ Pendiente" }}
               </span>
             </td>
           </tr>
