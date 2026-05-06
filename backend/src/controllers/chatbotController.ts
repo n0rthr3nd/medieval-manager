@@ -161,24 +161,29 @@ export const postChatMensaje = async (req: Request, res: Response) => {
       signal: abortController.signal,
     });
 
-    // Consumir tokens basado en el uso real reportado por Ollama.
-    const tokensUsed = result.usage?.totalTokens ?? 0;
-    if (tokensUsed > 0) {
-      try {
-        const { remaining } = await consumeChatbotTokens(
-          user.userId,
-          gate.weeklyLimit,
-          tokensUsed
-        );
-        currentRemaining = remaining;
-      } catch (err) {
-        console.error('[chatbot] error consumiendo tokens:', err);
-      }
-    } else {
-      console.warn(
-        `[chatbot] user=${user.username} - no se recibió info de tokens del modelo. ` +
-        `No se consume cuota.`
+    // Consumir tokens: preferir uso real de Ollama, si no → estimar.
+    let tokensUsed = result.usage?.totalTokens ?? 0;
+    if (tokensUsed <= 0) {
+      // Fallback: estimar ~4 chars por token (heurística estándar para español/inglés).
+      const inputChars =
+        history.reduce((sum, m) => sum + (m.content?.length ?? 0), 0) +
+        parsed.data.mensaje.length;
+      const outputChars = result.finalAssistantText.length;
+      tokensUsed = Math.max(1, Math.round((inputChars + outputChars) / 4));
+      console.log(
+        `[chatbot] user=${user.username} - usando estimación de tokens (input=${inputChars}chars, output=${outputChars}chars, estimado=${tokensUsed})`
       );
+    }
+
+    try {
+      const { remaining } = await consumeChatbotTokens(
+        user.userId,
+        gate.weeklyLimit,
+        tokensUsed
+      );
+      currentRemaining = remaining;
+    } catch (err) {
+      console.error('[chatbot] error consumiendo tokens:', err);
     }
 
     console.log(
