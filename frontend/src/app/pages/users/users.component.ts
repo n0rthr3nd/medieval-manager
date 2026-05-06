@@ -32,6 +32,8 @@ export class UsersComponent implements OnInit {
   chatbotGloballyEnabled = true;
   chatbotMessagesPerWeek = 5;
   chatbotMessagesPerWeekAdmin = 100;
+  chatbotTokensPerWeek = 4000;
+  chatbotTokensPerWeekAdmin = 50000;
   chatbotConfigSaving = false;
 
   readonly UserRole = UserRole;
@@ -61,6 +63,8 @@ export class UsersComponent implements OnInit {
           this.chatbotGloballyEnabled = response.data.chatbotGloballyEnabled ?? true;
           this.chatbotMessagesPerWeek = response.data.chatbotMessagesPerWeek ?? 5;
           this.chatbotMessagesPerWeekAdmin = response.data.chatbotMessagesPerWeekAdmin ?? 100;
+          this.chatbotTokensPerWeek = response.data.chatbotTokensPerWeek ?? 4000;
+          this.chatbotTokensPerWeekAdmin = response.data.chatbotTokensPerWeekAdmin ?? 50000;
         }
       },
       error: (error) => {
@@ -76,6 +80,8 @@ export class UsersComponent implements OnInit {
         chatbotGloballyEnabled: this.chatbotGloballyEnabled,
         chatbotMessagesPerWeek: this.chatbotMessagesPerWeek,
         chatbotMessagesPerWeekAdmin: this.chatbotMessagesPerWeekAdmin,
+        chatbotTokensPerWeek: this.chatbotTokensPerWeek,
+        chatbotTokensPerWeekAdmin: this.chatbotTokensPerWeekAdmin,
       })
       .subscribe({
         next: () => {

@@ -31,7 +31,7 @@
       @if (mensajes().length === 0) {
         <div class="empty">
           <p>¡Hola! Cuéntame qué bocadillo te apetece y lo gestionamos.</p>
-          <p class="hint">Tienes {{ weeklyLimit() }} mensajes por semana — úsalos con cabeza.</p>
+          <p class="hint">Tienes {{ weeklyLimit().toLocaleString() }} tokens por semana — úsalos con cabeza.</p>
         </div>
       }
 
@@ -104,7 +104,7 @@
 
     @if (sinCuota()) {
       <div class="quota-empty">
-        Has consumido todos los mensajes de la semana. Vuelve a probar el lunes.
+        Has consumido todos los tokens de la semana. Vuelve a probar el lunes.
       </div>
     }
   </div>

@@ -8,6 +8,10 @@ export interface ISystemConfig extends Document {
   chatbotGloballyEnabled: boolean;
   chatbotMessagesPerWeek: number;
   chatbotMessagesPerWeekAdmin: number;
+  /** Límite semanal de tokens para usuarios normales (default 4000). */
+  chatbotTokensPerWeek: number;
+  /** Límite semanal de tokens para administradores (default 50000). */
+  chatbotTokensPerWeekAdmin: number;
   updatedAt: Date;
 }
 
@@ -42,6 +46,16 @@ const SystemConfigSchema: Schema = new Schema(
     chatbotMessagesPerWeekAdmin: {
       type: Number,
       default: 100,
+      min: 0,
+    },
+    chatbotTokensPerWeek: {
+      type: Number,
+      default: 4000,
+      min: 0,
+    },
+    chatbotTokensPerWeekAdmin: {
+      type: Number,
+      default: 50000,
       min: 0,
     },
   },

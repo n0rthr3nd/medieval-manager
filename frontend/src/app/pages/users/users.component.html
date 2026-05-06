@@ -42,16 +42,16 @@
 
     <div class="setting-row">
       <div class="setting-info">
-        <h4>Mensajes/semana por usuario</h4>
-        <p>Cuántos mensajes puede enviar un usuario normal cada semana.</p>
+        <h4>Tokens/semana por usuario</h4>
+        <p>Cuántos tokens puede consumir un usuario normal cada semana (~4.000 ≈ 5-8 mensajes).</p>
       </div>
       <div class="quota-input-group">
         <input
           type="number"
           min="0"
-          max="999"
+          max="999999"
           class="form-control quota-input"
-          [(ngModel)]="chatbotMessagesPerWeek"
+          [(ngModel)]="chatbotTokensPerWeek"
         />
         <button
           type="button"
@@ -65,16 +65,16 @@
 
     <div class="setting-row">
       <div class="setting-info">
-        <h4>Mensajes/semana para admins</h4>
-        <p>Cuota separada para administradores (probadores).</p>
+        <h4>Tokens/semana para admins</h4>
+        <p>Cuota separada para administradores (~50.000 ≈ 50-100 mensajes).</p>
       </div>
       <div class="quota-input-group">
         <input
           type="number"
           min="0"
-          max="9999"
+          max="9999999"
           class="form-control quota-input"
-          [(ngModel)]="chatbotMessagesPerWeekAdmin"
+          [(ngModel)]="chatbotTokensPerWeekAdmin"
         />
         <button
           type="button"

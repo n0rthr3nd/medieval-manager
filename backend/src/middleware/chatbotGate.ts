@@ -1,13 +1,13 @@
 /**
  * Gate del chatbot: combina feature flag por usuario, kill-switch global y
- * límite semanal de mensajes en un único middleware.
+ * límite semanal de tokens en un único middleware.
  *
  * - Kill-switch global apaga la funcionalidad para todos.
  * - User.chatbotMode === 'disabled' → 403.
- * - Si los mensajes consumidos esta semana >= límite → 429.
+ * - Si los tokens consumidos esta semana >= límite → 429.
  *
- * El descuento del contador NO se hace aquí; lo hace el controller cuando se
- * recibe el primer chunk del modelo (así no penalizamos errores de upstream).
+ * El descuento del contador NO se hace aquí; lo hace el controller tras recibir
+ * la respuesta completa del modelo (así no penalizamos errores de upstream).
  */
 
 import { Response, NextFunction } from 'express';
@@ -31,8 +31,8 @@ declare module 'express-serve-static-core' {
   }
 }
 
-const DEFAULT_LIMIT_USER = 5;
-const DEFAULT_LIMIT_ADMIN = 100;
+const DEFAULT_TOKENS_USER = 4000;
+const DEFAULT_TOKENS_ADMIN = 50000;
 
 export async function chatbotGate(
   req: AuthRequest,
@@ -65,11 +65,11 @@ export async function chatbotGate(
     });
   }
 
-  // 3. Cuota semanal (usando semana objetivo - la del próximo viernes).
+  // 3. Cuota semanal de tokens (usando semana objetivo - la del próximo viernes).
   const isAdmin = userDoc.role === UserRole.ADMIN;
   const weeklyLimit = isAdmin
-    ? (config?.chatbotMessagesPerWeekAdmin ?? DEFAULT_LIMIT_ADMIN)
-    : (config?.chatbotMessagesPerWeek ?? DEFAULT_LIMIT_USER);
+    ? (config?.chatbotTokensPerWeekAdmin ?? DEFAULT_TOKENS_ADMIN)
+    : (config?.chatbotTokensPerWeek ?? DEFAULT_TOKENS_USER);
 
   const { week, year } = getTargetWeek(new Date());
   const conversacion = await ConversacionChat.findOne({
@@ -77,15 +77,15 @@ export async function chatbotGate(
     semana: week,
     ano: year,
     activa: true,
-  }).select('mensajesUsuarioCount').lean();
+  }).select('tokensUsados').lean();
 
-  const used = conversacion?.mensajesUsuarioCount ?? 0;
+  const used = conversacion?.tokensUsados ?? 0;
   const remaining = Math.max(0, weeklyLimit - used);
 
   if (remaining <= 0) {
     return res.status(429).json({
       error: 'chatbot_quota_exceeded',
-      message: `Has alcanzado el límite de ${weeklyLimit} mensajes esta semana.`,
+      message: `Has alcanzado el límite de ${weeklyLimit.toLocaleString()} tokens esta semana.`,
       weeklyLimit,
       used,
       remaining: 0,
@@ -103,21 +103,21 @@ export async function chatbotGate(
 }
 
 /**
- * Helper atómico para incrementar el contador en cuanto el modelo empieza a
- * responder. Devuelve el nuevo valor y cuántos quedan.
+ * Helper atómico para incrementar el contador de tokens tras recibir la
+ * respuesta completa del modelo. Devuelve el nuevo valor y cuántos quedan.
  */
-export async function consumeChatbotQuota(
+export async function consumeChatbotTokens(
   userId: string,
-  weeklyLimit: number
+  weeklyLimit: number,
+  tokensToConsume: number
 ): Promise<{ used: number; remaining: number }> {
-  // Usar semana objetivo (la del próximo viernes)
   const { week, year } = getTargetWeek(new Date());
   const updated = await ConversacionChat.findOneAndUpdate(
     { userId, semana: week, ano: year, activa: true },
-    { $inc: { mensajesUsuarioCount: 1 } },
+    { $inc: { tokensUsados: tokensToConsume } },
     { new: true, upsert: true, setDefaultsOnInsert: true }
-  ).select('mensajesUsuarioCount').lean();
+  ).select('tokensUsados').lean();
 
-  const used = updated?.mensajesUsuarioCount ?? 1;
+  const used = updated?.tokensUsados ?? tokensToConsume;
   return { used, remaining: Math.max(0, weeklyLimit - used) };
 }

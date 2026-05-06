@@ -86,6 +86,12 @@ export type ChatStreamEvent =
   | { type: 'done'; data: { quotaRemaining: number } }
   | { type: 'error'; data: { message: string; code?: string } };
 
+export interface TokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
 export interface OpenAIStreamChunk {
   id?: string;
   choices?: Array<{
@@ -105,4 +111,9 @@ export interface OpenAIStreamChunk {
     };
     finish_reason?: 'stop' | 'tool_calls' | 'length' | null;
   }>;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 }

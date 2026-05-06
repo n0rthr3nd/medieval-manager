@@ -12,6 +12,7 @@ import {
   ChatMessage,
   ChatStreamEvent,
   OpenAIStreamChunk,
+  TokenUsage,
   ToolCall,
   ToolExecutionContext,
 } from '../../types/chatbot';
@@ -41,6 +42,8 @@ export interface StreamChatResult {
   iterations: number;
   toolCallsExecuted: number;
   firstChunkReceived: boolean;
+  /** Total tokens consumidos en todas las iteraciones (prompt + completion). */
+  usage: TokenUsage;
 }
 
 const DIAS_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
@@ -66,6 +69,8 @@ export async function streamChat(opts: StreamChatOptions): Promise<StreamChatRes
   let toolCallsExecuted = 0;
   let firstChunkReceived = false;
   let finalAssistantText = '';
+  let totalPromptTokens = 0;
+  let totalCompletionTokens = 0;
 
   while (iterations < MAX_TOOL_ITERATIONS) {
     iterations++;
@@ -81,6 +86,12 @@ export async function streamChat(opts: StreamChatOptions): Promise<StreamChatRes
 
     if (!firstChunkReceived && (turn.text.length > 0 || turn.toolCalls.length > 0)) {
       firstChunkReceived = true;
+    }
+
+    // Acumular tokens de este turn.
+    if (turn.usage) {
+      totalPromptTokens += turn.usage.promptTokens;
+      totalCompletionTokens += turn.usage.completionTokens;
     }
 
     if (turn.toolCalls.length === 0) {
@@ -138,13 +149,25 @@ export async function streamChat(opts: StreamChatOptions): Promise<StreamChatRes
     emit({ type: 'text_delta', data: { delta: finalAssistantText } });
   }
 
-  return { finalAssistantText, iterations, toolCallsExecuted, firstChunkReceived };
+  return {
+    finalAssistantText,
+    iterations,
+    toolCallsExecuted,
+    firstChunkReceived,
+    usage: {
+      promptTokens: totalPromptTokens,
+      completionTokens: totalCompletionTokens,
+      totalTokens: totalPromptTokens + totalCompletionTokens,
+    },
+  };
 }
 
 interface OneTurnResult {
   text: string;
   toolCalls: ToolCall[];
   finishReason: string | null;
+  /** Usage info returned by Ollama in the final chunk. Undefined if missing. */
+  usage?: TokenUsage;
 }
 
 interface RunOneTurnOptions {
@@ -193,6 +216,7 @@ async function runOneTurn(opts: RunOneTurnOptions): Promise<OneTurnResult> {
   let textAcc = '';
   const toolCallsAcc: ToolCall[] = [];
   let finishReason: string | null = null;
+  let chunkUsage: TokenUsage | undefined;
 
   const nodeStream = Readable.fromWeb(upstream.body as any);
   let buffer = '';
@@ -212,6 +236,16 @@ async function runOneTurn(opts: RunOneTurnOptions): Promise<OneTurnResult> {
         parsed = JSON.parse(payloadStr);
       } catch {
         continue;
+      }
+
+      // Capturar usage del chunk (Ollama lo envía en un chunk sin choices).
+      if (parsed.usage) {
+        const u = parsed.usage;
+        chunkUsage = {
+          promptTokens: u.prompt_tokens ?? 0,
+          completionTokens: u.completion_tokens ?? 0,
+          totalTokens: u.total_tokens ?? (u.prompt_tokens ?? 0) + (u.completion_tokens ?? 0),
+        };
       }
 
       const choice = parsed.choices?.[0];
@@ -251,6 +285,7 @@ async function runOneTurn(opts: RunOneTurnOptions): Promise<OneTurnResult> {
     text: textAcc,
     toolCalls: validToolCalls,
     finishReason,
+    usage: chunkUsage,
   };
 }
 

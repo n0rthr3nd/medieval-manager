@@ -2,7 +2,7 @@
  * Controller del chatbot. Endpoint SSE que reenvía los eventos del servicio
  * al frontend.
  *
- * El descuento de cuota ocurre cuando se recibe el primer chunk del modelo
+ * El descuento de cuota de tokens ocurre DESPUÉS de que el modelo responde
  * (no antes). Si el upstream falla sin producir nada, no penalizamos al
  * usuario.
  */
@@ -21,7 +21,7 @@ import {
   ChatStreamEvent,
   ToolExecutionContext,
 } from '../types/chatbot';
-import { consumeChatbotQuota } from '../middleware/chatbotGate';
+import { consumeChatbotTokens } from '../middleware/chatbotGate';
 
 const MAX_HISTORY_MESSAGES = 10;
 const HEARTBEAT_MS = 25_000;
@@ -138,18 +138,6 @@ export const postChatMensaje = async (req: Request, res: Response) => {
     data: { conversationId: String(conversacion._id), quotaRemaining: currentRemaining },
   });
 
-  let quotaConsumed = false;
-  const consumeOnce = async () => {
-    if (quotaConsumed) return;
-    quotaConsumed = true;
-    try {
-      const { remaining } = await consumeChatbotQuota(user.userId, gate.weeklyLimit);
-      currentRemaining = remaining;
-    } catch (err) {
-      console.error('[chatbot] error consumiendo cuota:', err);
-    }
-  };
-
   try {
     const ctx: ToolExecutionContext = {
       userId: user.userId,
@@ -160,18 +148,7 @@ export const postChatMensaje = async (req: Request, res: Response) => {
 
     const history = mapHistoryToOpenAI(conversacion.mensajes.slice(0, -1));
 
-    // Wrapper de emit que descuenta cuota en el primer evento que confirme
-    // que la LLM está respondiendo (texto, tool call o propuesta).
     const emit = (event: ChatStreamEvent) => {
-      if (
-        !quotaConsumed &&
-        (event.type === 'text_delta' ||
-          event.type === 'tool_call_pending' ||
-          event.type === 'propuesta_pedido')
-      ) {
-        // Fire and forget; el descuento es atómico y no debe bloquear el stream.
-        void consumeOnce();
-      }
       send(event);
     };
 
@@ -183,10 +160,31 @@ export const postChatMensaje = async (req: Request, res: Response) => {
       emit,
       signal: abortController.signal,
     });
+
+    // Consumir tokens basado en el uso real reportado por Ollama.
+    const tokensUsed = result.usage?.totalTokens ?? 0;
+    if (tokensUsed > 0) {
+      try {
+        const { remaining } = await consumeChatbotTokens(
+          user.userId,
+          gate.weeklyLimit,
+          tokensUsed
+        );
+        currentRemaining = remaining;
+      } catch (err) {
+        console.error('[chatbot] error consumiendo tokens:', err);
+      }
+    } else {
+      console.warn(
+        `[chatbot] user=${user.username} - no se recibió info de tokens del modelo. ` +
+        `No se consume cuota.`
+      );
+    }
+
     console.log(
       `[chatbot] user=${user.username} convo=${conversacion._id} ` +
       `iters=${result.iterations} tools=${result.toolCallsExecuted} ` +
-      `latency=${Date.now() - startedAt}ms quotaConsumed=${quotaConsumed}`
+      `tokens=${tokensUsed} latency=${Date.now() - startedAt}ms`
     );
 
     // Guardar mensaje del asistente (si hubo).
@@ -260,7 +258,7 @@ export const getChatConversacionActual = async (req: Request, res: Response) => 
 };
 
 /**
- * Devuelve si el chatbot está disponible para el usuario y cuántos mensajes
+ * Devuelve si el chatbot está disponible para el usuario y cuántos tokens
  * le quedan. No consume cuota — la UI lo llama al cargar.
  */
 export const getChatStatus = async (req: Request, res: Response) => {
@@ -275,8 +273,8 @@ export const getChatStatus = async (req: Request, res: Response) => {
   const mode = userDoc.chatbotMode ?? ChatbotMode.DISABLED;
   const isAdmin = userDoc.role === UserRole.ADMIN;
   const weeklyLimit = isAdmin
-    ? (config?.chatbotMessagesPerWeekAdmin ?? 100)
-    : (config?.chatbotMessagesPerWeek ?? 5);
+    ? (config?.chatbotTokensPerWeekAdmin ?? 50000)
+    : (config?.chatbotTokensPerWeek ?? 4000);
 
   const { week, year } = getTargetWeek(new Date());
   const conv = await ConversacionChat.findOne({
@@ -284,8 +282,8 @@ export const getChatStatus = async (req: Request, res: Response) => {
     semana: week,
     ano: year,
     activa: true,
-  }).select('mensajesUsuarioCount').lean();
-  const used = conv?.mensajesUsuarioCount ?? 0;
+  }).select('tokensUsados').lean();
+  const used = conv?.tokensUsados ?? 0;
 
   const enabled =
     globallyEnabled &&

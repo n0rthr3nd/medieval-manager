@@ -24,8 +24,10 @@ export interface IConversacionChat extends Document {
   activa: boolean;
   semana: number;
   ano: number;
-  /** Número de mensajes del USUARIO consumidos esta semana (cuota). */
+  /** @deprecated Número de mensajes del USUARIO consumidos esta semana (cuota). Replaced by tokensUsados. */
   mensajesUsuarioCount: number;
+  /** Total de tokens consumidos esta semana (prompt + completion). */
+  tokensUsados: number;
 }
 
 /**
@@ -94,6 +96,11 @@ const ConversacionChatSchema: Schema = new Schema({
     required: true,
   },
   mensajesUsuarioCount: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  tokensUsados: {
     type: Number,
     default: 0,
     min: 0,

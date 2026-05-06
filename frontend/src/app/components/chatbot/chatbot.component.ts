@@ -53,7 +53,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   isBeta = computed(() => !!this.status()?.isBeta);
   remaining = computed(() => this.status()?.remaining ?? 0);
   weeklyLimit = computed(() => this.status()?.weeklyLimit ?? 0);
-  quotaTexto = computed(() => `${this.remaining()}/${this.weeklyLimit()} mensajes`);
+  quotaTexto = computed(() => `${this.remaining().toLocaleString()}/${this.weeklyLimit().toLocaleString()} tokens`);
   sinCuota = computed(() => this.remaining() <= 0);
 
   private currentSubscription?: Subscription;

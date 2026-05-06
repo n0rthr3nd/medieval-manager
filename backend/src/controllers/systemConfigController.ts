@@ -94,6 +94,8 @@ export const updateChatbotConfig = async (req: AuthRequest, res: Response): Prom
       chatbotGloballyEnabled,
       chatbotMessagesPerWeek,
       chatbotMessagesPerWeekAdmin,
+      chatbotTokensPerWeek,
+      chatbotTokensPerWeekAdmin,
     } = req.body;
 
     let config = await SystemConfig.findOne();
@@ -109,6 +111,12 @@ export const updateChatbotConfig = async (req: AuthRequest, res: Response): Prom
     }
     if (typeof chatbotMessagesPerWeekAdmin === 'number' && chatbotMessagesPerWeekAdmin >= 0) {
       config.chatbotMessagesPerWeekAdmin = chatbotMessagesPerWeekAdmin;
+    }
+    if (typeof chatbotTokensPerWeek === 'number' && chatbotTokensPerWeek >= 0) {
+      config.chatbotTokensPerWeek = chatbotTokensPerWeek;
+    }
+    if (typeof chatbotTokensPerWeekAdmin === 'number' && chatbotTokensPerWeekAdmin >= 0) {
+      config.chatbotTokensPerWeekAdmin = chatbotTokensPerWeekAdmin;
     }
 
     await config.save();
