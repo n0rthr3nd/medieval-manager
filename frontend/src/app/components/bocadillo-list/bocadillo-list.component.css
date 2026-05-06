@@ -164,6 +164,30 @@ h2 {
   font-weight: 500;
 }
 
+/* Estimated price (visible to all users when no real price is set) */
+.estimated-price {
+  margin-top: 16px;
+  padding: 8px 12px;
+  background: #F8F9FA;
+  border: 1px dashed #CED4DA;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.estimated-price .info-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.info-value.estimated {
+  color: #6C757D;
+  font-weight: 700;
+  font-style: italic;
+}
+
 /* Payment Section Styles */
 .payment-section {
   margin-top: 16px;

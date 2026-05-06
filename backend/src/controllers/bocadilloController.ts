@@ -6,6 +6,7 @@ import { getTargetWeek, getWeekNumber } from '../utils/dateUtils';
 import { ZodError } from 'zod';
 import { AuthRequest } from '../middleware/auth';
 import { UserRole } from '../models/User';
+import { estimarPrecio } from '../services/priceEstimator';
 
 export const createBocadillo = async (req: Request, res: Response) => {
   try {
@@ -34,6 +35,11 @@ export const createBocadillo = async (req: Request, res: Response) => {
     // Obtener semana objetivo (la del próximo viernes)
     const { week, year } = getTargetWeek(new Date());
 
+    const precioEstimado = estimarPrecio({
+      tamano: validatedData.tamano,
+      ingredientes: validatedData.ingredientes,
+    });
+
     // Crear bocadillo con el userId y nombre del usuario autenticado
     const bocadillo = new Bocadillo({
       ...validatedData,
@@ -41,6 +47,7 @@ export const createBocadillo = async (req: Request, res: Response) => {
       userId: user.userId,
       semana: week,
       ano: year,
+      precioEstimado,
     });
 
     await bocadillo.save();
@@ -147,6 +154,10 @@ export const updateBocadillo = async (req: Request, res: Response) => {
     bocadillo.tipoPan = validatedData.tipoPan;
     bocadillo.ingredientes = validatedData.ingredientes;
     bocadillo.bocataPredefinido = validatedData.bocataPredefinido;
+    bocadillo.precioEstimado = estimarPrecio({
+      tamano: validatedData.tamano,
+      ingredientes: validatedData.ingredientes,
+    });
 
     await bocadillo.save();
 

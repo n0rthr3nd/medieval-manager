@@ -20,6 +20,7 @@ export interface IBocadillo extends Document {
   bocataPredefinido?: string;
   esAlquimista: boolean;
   precio?: number;
+  precioEstimado?: number;
   pagado: boolean;
   semana: number; // Número de semana del año
   ano: number;
@@ -67,6 +68,11 @@ const BocadilloSchema: Schema = new Schema({
     default: false,
   },
   precio: {
+    type: Number,
+    required: false,
+    min: 0,
+  },
+  precioEstimado: {
     type: Number,
     required: false,
     min: 0,

@@ -65,6 +65,12 @@
         </div>
       </div>
 
+      <!-- Precio estimado (visible para todos cuando no hay precio real) -->
+      <div class="estimated-price" *ngIf="bocadillo.precioEstimado && !bocadillo.precio">
+        <span class="info-label">Precio estimado:</span>
+        <span class="info-value estimated">~ {{ formatCurrency(bocadillo.precioEstimado) }}</span>
+      </div>
+
       <!-- Precio y Pago (Admin) -->
       <div class="payment-section" *ngIf="isAdmin">
         <div class="payment-row">
@@ -74,7 +80,7 @@
             class="price-input"
             [value]="bocadillo.precio || ''"
             (blur)="updatePrecio(bocadillo, $event)"
-            placeholder="0.00"
+            [placeholder]="bocadillo.precioEstimado ? bocadillo.precioEstimado.toFixed(2) : '0.00'"
             min="0"
             step="0.01"
           />

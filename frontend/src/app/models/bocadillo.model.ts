@@ -17,6 +17,7 @@ export interface Bocadillo {
   ingredientes: string[];
   bocataPredefinido?: string;
   precio?: number;
+  precioEstimado?: number;
   pagado: boolean;
   semana?: number;
   ano?: number;
