@@ -9,7 +9,7 @@
 /* FAB (botón flotante) */
 .chatbot-fab {
   position: fixed;
-  bottom: 44px;
+  bottom: 75px;
   right: 24px;
   z-index: 1100;
 }
