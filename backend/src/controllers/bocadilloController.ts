@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Bocadillo from '../models/Bocadillo';
+import Bocadillo, { IBocadillo } from '../models/Bocadillo';
 import Settings from '../models/Settings';
 import { createBocadilloSchema } from '../validators/bocadilloValidator';
 import { getTargetWeek, getWeekNumber } from '../utils/dateUtils';
@@ -347,6 +347,70 @@ export const getBocadillosByWeek = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Error al obtener los bocadillos',
+    });
+  }
+};
+
+const TAMANO_LABELS: Record<string, string> = {
+  normal: 'Normal',
+  grande: 'Grande',
+};
+
+const TIPO_PAN_LABELS: Record<string, string> = {
+  normal: 'Normal',
+  integral: 'Integral',
+  semillas: 'Semillas',
+};
+
+// Exportar pedidos de la semana en curso en formato WhatsApp (público, sin auth)
+export const exportToWhatsApp = async (_req: Request, res: Response) => {
+  try {
+    const { week, year } = getTargetWeek(new Date());
+
+    const bocadillos = await Bocadillo.find({
+      semana: week,
+      ano: year,
+    }).sort({ fechaCreacion: -1 });
+
+    res.type('text/plain; charset=utf-8');
+
+    if (bocadillos.length === 0) {
+      return res.send(
+        '📋 *PEDIDO DE BOCADILLOS - SEMANA ACTUAL*\n\nNo hay pedidos esta semana'
+      );
+    }
+
+    const grouped = new Map<string, IBocadillo[]>();
+    for (const b of bocadillos) {
+      const key = `${b.tamano}-${b.tipoPan}-${[...b.ingredientes].sort().join(',')}`;
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key)!.push(b);
+    }
+
+    let text = '📋 *PEDIDO DE BOCADILLOS - SEMANA ACTUAL*\n\n';
+
+    grouped.forEach((items) => {
+      const sample = items[0];
+      const count = items.length;
+      const tamano = (TAMANO_LABELS[sample.tamano] ?? sample.tamano).toUpperCase();
+      const pan = TIPO_PAN_LABELS[sample.tipoPan] ?? sample.tipoPan;
+
+      text += `${count}x ${tamano} - Pan ${pan}`;
+      text += `\n   Ingredientes: ${sample.ingredientes.join(', ')}`;
+      if (sample.bocataPredefinido) {
+        text += ` (${sample.bocataPredefinido})`;
+      }
+      text += '\n\n';
+    });
+
+    text += `*TOTAL: ${bocadillos.length} bocadillos*`;
+
+    res.send(text);
+  } catch (error) {
+    console.error('Error exporting to WhatsApp:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al generar el texto de exportación',
     });
   }
 };

@@ -8,11 +8,15 @@ import {
   markAsPagado,
   getBocadillosByWeek,
   getSemanasDisponibles,
+  exportToWhatsApp,
 } from '../controllers/bocadilloController';
 import { checkOrderWindow } from '../middleware/orderWindow';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 
 const router = Router();
+
+// Exportar pedidos de la semana en curso en formato WhatsApp (público, sin auth)
+router.get('/export/whatsapp', exportToWhatsApp);
 
 // Obtener bocadillos de la semana actual (requiere autenticación)
 router.get('/', authenticateToken, getBocadillosSemanaActual);
