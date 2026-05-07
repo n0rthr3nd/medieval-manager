@@ -28,6 +28,11 @@
   <div *ngIf="!isLoading && !errorMessage">
     <!-- Resumen -->
     <div class="summary-cards">
+      <div class="summary-card estimado" *ngIf="summary.countTotal > 0">
+        <div class="summary-label">Total estimado</div>
+        <div class="summary-value">~ {{ formatCurrency(summary.totalEstimado) }}</div>
+        <div class="summary-count">{{ summary.countTotal }} bocadillos</div>
+      </div>
       <div class="summary-card total">
         <div class="summary-label">Total</div>
         <div class="summary-value">{{ formatCurrency(summary.total) }}</div>

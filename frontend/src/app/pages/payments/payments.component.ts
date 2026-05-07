@@ -19,6 +19,8 @@ interface PaymentSummary {
   pendiente: number;
   countPagados: number;
   countPendientes: number;
+  totalEstimado: number;
+  countTotal: number;
 }
 
 @Component({
@@ -40,6 +42,8 @@ export class PaymentsComponent implements OnInit {
     pendiente: 0,
     countPagados: 0,
     countPendientes: 0,
+    totalEstimado: 0,
+    countTotal: 0,
   };
   isLoading = false;
   errorMessage = '';
@@ -123,6 +127,12 @@ export class PaymentsComponent implements OnInit {
   }
 
   processPayments(bocadillos: Bocadillo[]) {
+    this.summary.totalEstimado = bocadillos.reduce(
+      (acc, b) => acc + (b.precio ?? b.precioEstimado ?? 0),
+      0,
+    );
+    this.summary.countTotal = bocadillos.length;
+
     this.payments = bocadillos
       .filter(b => b.precio !== undefined && b.precio > 0)
       .map((b) => ({

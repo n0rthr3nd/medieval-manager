@@ -86,6 +86,24 @@ h2 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.08);
 }
 
+.summary-card.estimado {
+  background: white;
+  color: #0A0D14;
+  border: 2px dashed #CED4DA;
+  box-shadow: none;
+}
+
+.summary-card.estimado .summary-value {
+  font-style: italic;
+  color: #495057;
+}
+
+.summary-card.estimado .summary-label,
+.summary-card.estimado .summary-count {
+  color: #6C757D;
+  opacity: 1;
+}
+
 .summary-card.total {
   background: linear-gradient(135deg, #0075FF 0%, #00C6FF 100%);
   color: white;
