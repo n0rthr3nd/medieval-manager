@@ -11,27 +11,31 @@ export function getWeekNumber(date: Date): { week: number; year: number } {
 }
 
 /**
- * Verifica si la fecha actual está dentro de la ventana de pedidos
- * Sábado 00:00 - Viernes 23:59 (pedidos para el viernes siguiente)
+ * Verifica si la fecha actual está dentro de la ventana de pedidos.
  *
- * El sistema permite hacer pedidos para el viernes de la próxima semana
- * desde el sábado de la semana actual.
+ * Ventana: Sábado 00:00 → Jueves 17:00 server (= 19:00 Madrid CEST).
+ * El viernes está cerrado (día de reparto).
+ *
+ * NOTA: la comparación de horas usa la zona horaria local del servidor.
+ * En Render (UTC), 17:00 server = 19:00 Madrid en verano (CEST) y
+ * 18:00 Madrid en invierno (CET).
  */
 export function isWithinOrderWindow(date: Date = new Date()): boolean {
   const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
   const hours = date.getHours();
   const minutes = date.getMinutes();
 
-  // Sábado (6), Domingo (0), Lunes (1), Martes (2), Miércoles (3), Jueves (4) - todo el día
-  if (dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek >= 1 && dayOfWeek <= 4) {
+  // Sábado (6), Domingo (0), Lunes (1), Martes (2), Miércoles (3) - todo el día
+  if (dayOfWeek === 6 || dayOfWeek === 0 || (dayOfWeek >= 1 && dayOfWeek <= 3)) {
     return true;
   }
 
-  // Viernes (5) - todo el día hasta las 23:59
-  if (dayOfWeek === 5) {
-    return hours < 23 || (hours === 23 && minutes <= 59);
+  // Jueves (4) - hasta las 17:00 server (19:00 Madrid)
+  if (dayOfWeek === 4) {
+    return hours < 17 || (hours === 17 && minutes === 0);
   }
 
+  // Viernes (5) - cerrado, día de reparto
   return false;
 }
 

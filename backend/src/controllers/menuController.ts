@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { BOCATAS_PREDEFINIDOS } from '../config/menu';
-import { isWithinOrderWindow, getNextSaturday, getFridayDeadline, getTargetWeek } from '../utils/dateUtils';
+import { isWithinOrderWindow, getNextSaturday, getTargetWeek, getThursdayDeadline } from '../utils/dateUtils';
 import BocadilloAlquimista from '../models/BocadilloAlquimista';
 import Ingrediente from '../models/Ingrediente';
 import SystemConfig from '../models/SystemConfig';
@@ -80,7 +80,7 @@ export const getOrderWindowStatus = async (req: Request, res: Response) => {
         data: {
           isOpen: false,
           currentTime: now.toISOString(),
-          deadline: getFridayDeadline(now).toISOString(),
+          deadline: getThursdayDeadline(now).toISOString(),
           nextOpening: getNextSaturday(now).toISOString(),
           message: config.closureMessage || 'El servicio de bocadillos está cerrado esta semana. Vuelve a probar la próxima semana.',
           manuallyClosed: true,
@@ -96,10 +96,10 @@ export const getOrderWindowStatus = async (req: Request, res: Response) => {
       data: {
         isOpen,
         currentTime: now.toISOString(),
-        deadline: getFridayDeadline(now).toISOString(),
+        deadline: getThursdayDeadline(now).toISOString(),
         nextOpening: isOpen ? null : getNextSaturday(now).toISOString(),
         message: isOpen
-          ? 'Ventana de pedidos abierta (Sábado a Viernes)'
+          ? 'Ventana de pedidos abierta (Sábado a Jueves 19:00)'
           : 'Ventana de pedidos cerrada. Se abrirá el próximo Sábado.',
         manuallyClosed: false,
       },
@@ -115,10 +115,10 @@ export const getOrderWindowStatus = async (req: Request, res: Response) => {
       data: {
         isOpen,
         currentTime: now.toISOString(),
-        deadline: getFridayDeadline(now).toISOString(),
+        deadline: getThursdayDeadline(now).toISOString(),
         nextOpening: isOpen ? null : getNextSaturday(now).toISOString(),
         message: isOpen
-          ? 'Ventana de pedidos abierta (Sábado a Viernes)'
+          ? 'Ventana de pedidos abierta (Sábado a Jueves 19:00)'
           : 'Ventana de pedidos cerrada. Se abrirá el próximo Sábado.',
       },
     });

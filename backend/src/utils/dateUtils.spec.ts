@@ -26,10 +26,10 @@ describe('dateUtils', () => {
   });
 
   describe('isWithinOrderWindow', () => {
-    it('should return true for Friday (all day)', () => {
+    it('should return false for Friday (delivery day, no orders)', () => {
       // Friday = 5
       const date = new Date('2024-01-12'); // Set to a Friday
-      expect(isWithinOrderWindow(date)).toBe(true);
+      expect(isWithinOrderWindow(date)).toBe(false);
     });
 
     it('should return true for Saturday (all day)', () => {
@@ -92,7 +92,7 @@ describe('dateUtils', () => {
       expect(friday.getDate()).toBe(12); // Jan 12, 2024
     });
 
-    it('should return today if today is Friday (order window still open until 23:59)', () => {
+    it('should return today if today is Friday (delivery day — admin still views orders)', () => {
       const date = new Date('2024-01-12'); // Friday
       const friday = getNextFriday(date);
       expect(friday.getDay()).toBe(5);
