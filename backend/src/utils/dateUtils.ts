@@ -36,14 +36,15 @@ export function isWithinOrderWindow(date: Date = new Date()): boolean {
 }
 
 /**
- * Obtiene la fecha del próximo viernes
+ * Obtiene la fecha del viernes objetivo del ciclo de pedidos actual.
+ * Si hoy es viernes (día de reparto), devuelve hoy — la ventana de pedidos
+ * sigue abierta hasta viernes 23:59 PARA ese mismo viernes.
  */
 export function getNextFriday(date: Date = new Date()): Date {
   const result = new Date(date);
   const dayOfWeek = result.getDay();
-  // Calcular días hasta el próximo viernes (5)
-  const daysUntilFriday = dayOfWeek === 5 ? 7 : (5 - dayOfWeek + 7) % 7;
-  result.setDate(result.getDate() + (daysUntilFriday === 0 ? 7 : daysUntilFriday));
+  const daysUntilFriday = (5 - dayOfWeek + 7) % 7;
+  result.setDate(result.getDate() + daysUntilFriday);
   result.setHours(0, 0, 0, 0);
   return result;
 }
@@ -86,12 +87,13 @@ export function getThursdayDeadline(date: Date = new Date()): Date {
 }
 
 /**
- * Obtiene la fecha del viernes a las 23:59 (la fecha límite para pedidos)
+ * Obtiene la fecha del viernes a las 23:59 (la fecha límite para pedidos).
+ * Si hoy es viernes, devuelve hoy a las 23:59 (la ventana cierra esta noche).
  */
 export function getFridayDeadline(date: Date = new Date()): Date {
   const result = new Date(date);
   const dayOfWeek = result.getDay();
-  const daysUntilFriday = dayOfWeek === 5 ? 7 : (5 - dayOfWeek + 7) % 7;
+  const daysUntilFriday = (5 - dayOfWeek + 7) % 7;
   result.setDate(result.getDate() + daysUntilFriday);
   result.setHours(23, 59, 0, 0);
   return result;

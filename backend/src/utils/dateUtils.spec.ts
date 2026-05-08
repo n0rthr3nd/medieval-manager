@@ -92,11 +92,11 @@ describe('dateUtils', () => {
       expect(friday.getDate()).toBe(12); // Jan 12, 2024
     });
 
-    it('should return next Friday if today is Friday', () => {
+    it('should return today if today is Friday (order window still open until 23:59)', () => {
       const date = new Date('2024-01-12'); // Friday
       const friday = getNextFriday(date);
       expect(friday.getDay()).toBe(5);
-      expect(friday.getDate()).toBe(19); // Next Friday
+      expect(friday.getDate()).toBe(12); // Same Friday
     });
 
     it('should reset time to 00:00:00', () => {
@@ -144,10 +144,11 @@ describe('dateUtils', () => {
     });
 
     it('should return the same week if called on Friday', () => {
-      const date = new Date('2024-01-12'); // Friday
+      const date = new Date('2024-01-12'); // Friday (week 2)
       const { week, year } = getTargetWeek(date);
-      // Next Friday is Jan 19, which is week 3
-      expect(week).toBe(3);
+      // On Friday the order window is still open for TODAY's Friday delivery
+      expect(week).toBe(2);
+      expect(year).toBe(2024);
     });
 
     it('should return correct year when crossing year boundary', () => {
