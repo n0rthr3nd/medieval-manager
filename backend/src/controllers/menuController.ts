@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { BOCATAS_PREDEFINIDOS } from '../config/menu';
-import { isWithinOrderWindow, getNextSaturday, getFridayDeadline, getTargetWeek, getThursdayDeadline, getNextMonday } from '../utils/dateUtils';
+import { isWithinOrderWindow, getNextSaturday, getFridayDeadline, getTargetWeek } from '../utils/dateUtils';
 import BocadilloAlquimista from '../models/BocadilloAlquimista';
 import Ingrediente from '../models/Ingrediente';
 import SystemConfig from '../models/SystemConfig';
@@ -96,8 +96,8 @@ export const getOrderWindowStatus = async (req: Request, res: Response) => {
       data: {
         isOpen,
         currentTime: now.toISOString(),
-        deadline: getThursdayDeadline(now).toISOString(),
-        nextOpening: isOpen ? null : getNextMonday(now).toISOString(),
+        deadline: getFridayDeadline(now).toISOString(),
+        nextOpening: isOpen ? null : getNextSaturday(now).toISOString(),
         message: isOpen
           ? 'Ventana de pedidos abierta (Sábado a Viernes)'
           : 'Ventana de pedidos cerrada. Se abrirá el próximo Sábado.',
@@ -115,8 +115,8 @@ export const getOrderWindowStatus = async (req: Request, res: Response) => {
       data: {
         isOpen,
         currentTime: now.toISOString(),
-        deadline: getThursdayDeadline(now).toISOString(),
-        nextOpening: isOpen ? null : getNextMonday(now).toISOString(),
+        deadline: getFridayDeadline(now).toISOString(),
+        nextOpening: isOpen ? null : getNextSaturday(now).toISOString(),
         message: isOpen
           ? 'Ventana de pedidos abierta (Sábado a Viernes)'
           : 'Ventana de pedidos cerrada. Se abrirá el próximo Sábado.',
