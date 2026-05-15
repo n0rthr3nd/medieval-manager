@@ -5,6 +5,7 @@ import {
   inject,
   signal,
   computed,
+  effect,
   output,
   ViewChild,
   ElementRef,
@@ -13,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ChatbotService } from '../../services/chatbot.service';
+import { SpeechService, SttErrorCode } from '../../services/speech.service';
 import {
   ChatMensajeUI,
   ChatbotStatus,
@@ -35,6 +37,7 @@ import {
 })
 export class ChatbotComponent implements OnInit, OnDestroy {
   private chatbotService = inject(ChatbotService);
+  protected speech = inject(SpeechService);
 
   @ViewChild('scrollContainer') private scrollContainer?: ElementRef<HTMLElement>;
 
@@ -58,6 +61,26 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   private currentSubscription?: Subscription;
   private currentAbort?: () => void;
+  private inputSnapshotAntesDictado = '';
+
+  constructor() {
+    effect(() => {
+      if (!this.speech.isListening()) return;
+      const final = this.speech.finalTranscript();
+      const interim = this.speech.interimTranscript();
+      const dicho = (final + interim).trim();
+      const prefijo = this.inputSnapshotAntesDictado;
+      const combinado = prefijo && dicho ? `${prefijo} ${dicho}` : prefijo || dicho;
+      this.inputValue.set(combinado);
+    });
+
+    effect(() => {
+      const err = this.speech.sttError();
+      if (!err) return;
+      const msg = this.mensajeErrorDictado(err);
+      if (msg) this.errorMessage.set(msg);
+    });
+  }
 
   async ngOnInit() {
     await this.refreshStatus();
@@ -68,6 +91,8 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.cancelarStream();
+    this.speech.abortListening();
+    this.speech.cancelSpeech();
   }
 
   async refreshStatus() {
@@ -103,6 +128,8 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   cerrar() {
     this.abierto.set(false);
     this.marcarAnimacionComoVista();
+    this.speech.abortListening();
+    this.speech.cancelSpeech();
   }
 
   cancelarStream() {
@@ -114,6 +141,9 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   enviar() {
     this.marcarAnimacionComoVista();
+    if (this.speech.isListening()) {
+      this.speech.stopListening();
+    }
     const texto = this.inputValue().trim();
     if (!texto || this.enviando() || this.sinCuota()) return;
 
@@ -274,5 +304,37 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   marcarAnimacionComoVista() {
     localStorage.setItem('chatbotAnimacionVista', 'true');
     this.animacionVista = true;
+  }
+
+  alternarDictado() {
+    if (this.speech.isListening()) {
+      this.speech.stopListening();
+      return;
+    }
+    this.inputSnapshotAntesDictado = this.inputValue().trimEnd();
+    this.errorMessage.set('');
+    this.speech.startListening('es-ES');
+  }
+
+  alternarLectura(m: ChatMensajeUI) {
+    if (!m.contenido) return;
+    this.speech.toggleSpeak(m.id, m.contenido, 'es-ES');
+  }
+
+  private mensajeErrorDictado(code: SttErrorCode): string | null {
+    switch (code) {
+      case 'not-allowed':
+      case 'service-not-allowed':
+        return 'Permiso de micrófono denegado. Habilítalo en los ajustes del navegador.';
+      case 'audio-capture':
+        return 'No se detecta micrófono.';
+      case 'network':
+        return 'Sin conexión para el dictado por voz.';
+      case 'no-speech':
+      case 'aborted':
+        return null;
+      default:
+        return 'No se pudo iniciar el dictado.';
+    }
   }
 }

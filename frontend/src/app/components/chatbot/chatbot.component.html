@@ -38,6 +38,16 @@
       @for (m of mensajes(); track m.id) {
         <div class="msg" [class.user]="m.rol === 'usuario'" [class.assistant]="m.rol === 'asistente'">
           <div class="bubble">
+            @if (speech.ttsSupported() && m.rol === 'asistente' && !m.streaming && m.contenido) {
+              <button
+                type="button"
+                class="speak-btn"
+                [class.speaking]="speech.speakingId() === m.id"
+                [attr.aria-label]="speech.speakingId() === m.id ? 'Detener lectura' : 'Leer en voz alta'"
+                (click)="alternarLectura(m)">
+                {{ speech.speakingId() === m.id ? '⏹' : '🔊' }}
+              </button>
+            }
             @if (m.toolCalls && m.toolCalls.length > 0) {
               <div class="tool-calls">
                 @for (tc of m.toolCalls; track $index) {
@@ -85,6 +95,17 @@
     }
 
     <form class="composer" (ngSubmit)="enviar()" #f="ngForm">
+      @if (speech.sttSupported()) {
+        <button
+          type="button"
+          class="mic-btn"
+          [class.recording]="speech.isListening()"
+          [disabled]="enviando() || sinCuota()"
+          [attr.aria-label]="speech.isListening() ? 'Detener dictado' : 'Dictar mensaje'"
+          (click)="alternarDictado()">
+          {{ speech.isListening() ? '⏹' : '🎤' }}
+        </button>
+      }
       <input
         type="text"
         [ngModel]="inputValue()"
